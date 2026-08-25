@@ -1,0 +1,93 @@
+@model Truck_Maintanance_system.Models.TruckDocument
+
+@{
+    ViewData["Title"] = "Add Document";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header bg-white">
+                    <h5 class="m-0 font-weight-bold text-primary">Add New Truck Document</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" enctype="multipart/form-data" class="needs-validation">
+                        <input type="hidden" asp-for="TruckId" value="@ViewBag.TruckId" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DocumentType" class="form-label font-weight-bold"></label>
+                                <select asp-for="DocumentType" class="form-select" required>
+                                    <option value="">-- Select Type --</option>
+                                    <option value="Insurance Policy">Insurance Policy</option>
+                                    <option value="RC Book">RC Book (Registration)</option>
+                                    <option value="National Permit">National Permit</option>
+                                    <option value="State Permit">State Permit</option>
+                                    <option value="Fitness Certificate (FC)">Fitness Certificate (FC)</option>
+                                    <option value="Pollution (PUC)">Pollution Under Control (PUC)</option>
+                                    <option value="Road Tax">Road Tax</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span asp-validation-for="DocumentType" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="DocumentNumber" class="form-label font-weight-bold"></label>
+                                <input asp-for="DocumentNumber" class="form-control" placeholder="e.g. POL-123456" required />
+                                <span asp-validation-for="DocumentNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Provider" class="form-label font-weight-bold"></label>
+                            <input asp-for="Provider" class="form-control" placeholder="e.g. HDFC Ergo, RTO Chennai" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="IssueDate" class="form-label font-weight-bold"></label>
+                                <input asp-for="IssueDate" type="date" class="form-control" required />
+                                <span asp-validation-for="IssueDate" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExpiryDate" class="form-label font-weight-bold"></label>
+                                <input asp-for="ExpiryDate" type="date" class="form-control" required />
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Cost" class="form-label font-weight-bold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">₹</span>
+                                <input asp-for="Cost" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label font-weight-bold">Upload Document (PDF/Image)</label>
+                            <input type="file" name="documentFile" class="form-control" accept=".pdf,image/*" />
+                            <small class="text-muted">Max file size: 10MB.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label font-weight-bold"></label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Any additional notes..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" asp-route-truckId="@ViewBag.TruckId" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary shadow-sm px-4">
+                                <i class="fas fa-save mr-1"></i> Save Document
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
