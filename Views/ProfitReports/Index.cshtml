@@ -27,7 +27,7 @@
             <select name="month" class="form-select form-select-sm mr-2" style="width: auto;">
                 @for(int i=1; i<=12; i++)
                 {
-                    <option value="@i" selected="@(i == currentMonth)">@new DateTime(currentYear, i, 1).ToString("MMMM")</option>
+                    <option value="@i" selected="@(i == currentMonth)">@(new DateTime(currentYear, i, 1).ToString("MMMM"))</option>
                 }
             </select>
             <select name="year" class="form-select form-select-sm mr-2 mx-2" style="width: auto;">
