@@ -1,0 +1,140 @@
+@model Truck_Maintanance_system.Models.TripRecord
+
+@{
+    ViewData["Title"] = "Driver Live Tracking";
+    Layout = null; // Use no layout for the driver mobile view so it looks like an app
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>GPS Transmission - TMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        body { background-color: #f8f9fc; }
+        .pulse-ring {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(40, 167, 69, 0.2);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+            display: none;
+            z-index: -1;
+        }
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+        .btn-massive {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="text-center mb-4">
+            <h4 class="font-weight-bold text-primary"><i class="fas fa-satellite-dish"></i> GPS Transmit</h4>
+            <p class="text-muted">Trip: @Model.RouteStart to @Model.RouteEnd<br/>Truck: @Model.Truck?.LicensePlate</p>
+        </div>
+
+        <div class="d-flex justify-content-center align-items-center mb-5 mt-5" style="position: relative; height: 200px;">
+            <div id="pulseEffect" class="pulse-ring"></div>
+            <button id="btnToggleTrack" class="btn btn-primary btn-massive border-0" onclick="toggleTracking()">
+                <i class="fas fa-play d-block fa-2x mb-2"></i> START
+            </button>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body bg-light rounded">
+                <h6 class="font-weight-bold text-dark border-bottom pb-2">Status Log</h6>
+                <div id="logContainer" style="height: 150px; overflow-y: auto; font-size: 0.85rem; font-family: monospace;">
+                    <div class="text-muted">Ready to transmit location...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let trackingInterval = null;
+        let isTracking = false;
+        const tripId = @Model.Id;
+
+        function logMsg(msg, isError = false) {
+            const logBox = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const color = isError ? 'text-danger' : 'text-success';
+            logBox.innerHTML = `<div class="${color}">[${time}] ${msg}</div>` + logBox.innerHTML;
+        }
+
+        function sendLocation() {
+            if (!navigator.geolocation) {
+                logMsg("Geolocation is not supported by your browser", true);
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    fetch(`/LiveTracking/PingLocation?tripId=${tripId}&lat=${lat}&lng=${lng}`, {
+                        method: 'POST'
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        logMsg(`Pinged: ${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+                    })
+                    .catch(error => {
+                        logMsg("Failed to reach server", true);
+                    });
+                },
+                function(error) {
+                    logMsg(`GPS Error: ${error.message}`, true);
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        }
+
+        function toggleTracking() {
+            const btn = document.getElementById('btnToggleTrack');
+            const pulse = document.getElementById('pulseEffect');
+
+            if (isTracking) {
+                // Stop
+                clearInterval(trackingInterval);
+                isTracking = false;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+                btn.innerHTML = '<i class="fas fa-play d-block fa-2x mb-2"></i> START';
+                pulse.style.display = 'none';
+                logMsg("<span class='text-warning'>Tracking stopped.</span>");
+            } else {
+                // Start
+                isTracking = true;
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-success');
+                btn.innerHTML = '<i class="fas fa-stop d-block fa-2x mb-2"></i> STOP';
+                pulse.style.display = 'block';
+                logMsg("Tracking started! Do not close this page.");
+                
+                sendLocation(); // send immediate ping
+                trackingInterval = setInterval(sendLocation, 10000); // Ping every 10 seconds
+            }
+        }
+    </script>
+</body>
+</html>

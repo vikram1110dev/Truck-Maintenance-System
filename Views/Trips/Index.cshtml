@@ -56,11 +56,21 @@
                                     ₹@item.NetTripProfit.ToString("N2")
                                 </td>
                                 <td class="align-middle">
-                                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this trip record?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Trip">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <div class="d-flex align-items-center">
+                                        <!-- Live Tracking Buttons -->
+                                        <a asp-controller="LiveTracking" asp-action="Track" asp-route-tripId="@item.Id" class="btn btn-sm btn-outline-success mr-2" title="View Live Map">
+                                            <i class="fas fa-map-marked-alt"></i> Map
+                                        </a>
+                                        <a asp-controller="LiveTracking" asp-action="Driver" asp-route-tripId="@item.Id" target="_blank" class="btn btn-sm btn-outline-info mr-3" title="Driver Link (Share this)">
+                                            <i class="fas fa-mobile-alt"></i> Driver App
+                                        </a>
+                                        
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this trip record?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Trip">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         }
