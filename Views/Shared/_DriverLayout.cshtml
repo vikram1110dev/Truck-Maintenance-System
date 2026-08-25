@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - Driver Portal</title>
+    
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    
+    <style>
+        body {
+            background-color: #f8f9fc;
+            padding-bottom: 70px; /* Space for bottom nav if needed */
+        }
+        .driver-topbar {
+            background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        }
+        .driver-content {
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Topbar -->
+    <nav class="navbar navbar-expand navbar-dark driver-topbar topbar mb-4 static-top shadow">
+        <div class="container">
+            <a class="navbar-brand font-weight-bold" asp-controller="DriverPortal" asp-action="Index">
+                <i class="fas fa-steering-wheel mr-2"></i> Driver Portal
+            </a>
+            
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link text-white" asp-controller="DriverPortal" asp-action="Logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- End of Topbar -->
+
+    <!-- Main Content -->
+    <div class="container driver-content">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
