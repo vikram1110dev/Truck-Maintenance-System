@@ -20,10 +20,35 @@
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary border-bottom pb-2 mb-3">Vehicle Details</h6>
                                 
-                                <div class="mb-3">
-                                    <label asp-for="LicensePlate" class="form-label font-weight-bold">License Plate</label>
-                                    <input asp-for="LicensePlate" class="form-control text-uppercase" placeholder="e.g. TN-01-AB-1234" required />
-                                    <span asp-validation-for="LicensePlate" class="text-danger"></span>
+                                <div class="mb-4">
+                                    <label class="form-label font-weight-bold">License Plate Number</label>
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-2 text-center" style="flex: 1;">
+                                            <input asp-for="StateCode" class="form-control text-uppercase text-center font-weight-bold" placeholder="TN" maxlength="2" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">STATE</small>
+                                        </div>
+                                        <span class="mx-1 font-weight-bold">-</span>
+                                        <div class="mx-2 text-center" style="flex: 1;">
+                                            <input asp-for="RtoCode" class="form-control text-center font-weight-bold" placeholder="01" maxlength="2" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">RTO</small>
+                                        </div>
+                                        <span class="mx-1 font-weight-bold">-</span>
+                                        <div class="mx-2 text-center" style="flex: 1;">
+                                            <input asp-for="SeriesCode" class="form-control text-uppercase text-center font-weight-bold" placeholder="AB" maxlength="2" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">SERIES</small>
+                                        </div>
+                                        <span class="mx-1 font-weight-bold">-</span>
+                                        <div class="ml-2 text-center" style="flex: 1.5;">
+                                            <input asp-for="SerialNumber" class="form-control text-center font-weight-bold" placeholder="1234" maxlength="4" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">NUMBER</small>
+                                        </div>
+                                    </div>
+                                    <div class="w-100">
+                                        <span asp-validation-for="StateCode" class="text-danger d-block"></span>
+                                        <span asp-validation-for="RtoCode" class="text-danger d-block"></span>
+                                        <span asp-validation-for="SeriesCode" class="text-danger d-block"></span>
+                                        <span asp-validation-for="SerialNumber" class="text-danger d-block"></span>
+                                    </div>
                                 </div>
 
                                 <div class="row">

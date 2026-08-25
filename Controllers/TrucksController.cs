@@ -31,8 +31,14 @@ namespace Truck_Maintanance_system.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Truck truck)
         {
+            // Remove the LicensePlate from validation since it's built from the 4 segments
+            ModelState.Remove(nameof(Truck.LicensePlate));
+
             if (ModelState.IsValid)
             {
+                // Concatenate the 4 boxes into a single string
+                truck.LicensePlate = $"{truck.StateCode.ToUpper()} {truck.RtoCode} {truck.SeriesCode.ToUpper()} {truck.SerialNumber}";
+                
                 _context.Add(truck);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
