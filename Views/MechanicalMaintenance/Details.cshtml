@@ -66,6 +66,12 @@
                             }
                         </div>
                     </div>
+                    @if(!string.IsNullOrWhiteSpace(item.Notes))
+                    {
+                        <div class="mt-2 p-2 bg-white rounded border border-light small text-secondary">
+                            <strong><i class="fas fa-sticky-note"></i> Note:</strong> @item.Notes
+                        </div>
+                    }
                 </div>
             </div>
         }

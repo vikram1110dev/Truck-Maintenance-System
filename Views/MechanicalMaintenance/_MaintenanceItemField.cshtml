@@ -131,4 +131,11 @@
         <label class="form-label small text-muted mb-1">Valid (Date)</label>
         <input name="@(propertyName).ValidForNextDate" type="date" class="form-control form-control-sm" />
     </div>
+    
+    <div class="col-12 mt-2">
+        <div class="input-group input-group-sm shadow-sm">
+            <span class="input-group-text bg-light border-0"><i class="fas fa-sticky-note text-muted"></i></span>
+            <input name="@(propertyName).Notes" class="form-control border-light bg-light" placeholder="Notes (Optional: e.g. thread depth low, requires follow-up, brand used...)" />
+        </div>
+    </div>
 </div>

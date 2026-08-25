@@ -12,6 +12,9 @@ namespace Truck_Maintanance_system.Models
         [Display(Name = "Expense (₹)")]
         public decimal? Cost { get; set; }
 
+        [Display(Name = "Notes")]
+        public string? Notes { get; set; }
+
         [Display(Name = "Valid For Next (km)")]
         public int? ValidForNextKm { get; set; }
 
