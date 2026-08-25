@@ -1,0 +1,75 @@
+@model IEnumerable<Truck_Maintanance_system.Models.AlertTicket>
+
+@{
+    ViewData["Title"] = "Alert History";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-history text-secondary mr-2"></i> Alert History
+        </h1>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">
+                <i class="fas fa-arrow-left fa-sm mr-2"></i> Back to Active
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-folder-open fa-4x text-gray-300 mb-3"></i>
+                <h4 class="text-gray-500">No History Found</h4>
+                <p class="text-muted">There are no resolved or cleared alerts.</p>
+            </div>
+        }
+        
+        @foreach (var ticket in Model)
+        {
+            var iconClass = ticket.Category == "Truck Breakdown" ? "fa-tools" : "fa-info-circle";
+            
+            <div class="col-xl-4 col-md-6 mb-4">
+                <a asp-action="Details" asp-route-id="@ticket.Id" class="text-decoration-none">
+                    <div class="card shadow-sm h-100 py-2 border-left-success border-success alert-card-hover bg-light">
+                        <div class="card-body opacity-75">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-uppercase mb-1 text-success">
+                                        @ticket.Category - Truck @ticket.Truck?.LicensePlate
+                                    </div>
+                                    <div class="h5 mb-1 font-weight-bold text-gray-600 text-truncate">
+                                        @ticket.Title
+                                    </div>
+                                    <div class="mt-2 small text-muted">
+                                        <i class="far fa-clock"></i> Resolved: @ticket.UpdatedAt.ToString("g")
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="badge bg-success">
+                                            Resolved
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas @iconClass fa-2x text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .alert-card-hover:hover {
+        transform: translateY(-3px);
+        transition: transform 0.2s ease-in-out;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+    .opacity-75 {
+        opacity: 0.75;
+    }
+</style>

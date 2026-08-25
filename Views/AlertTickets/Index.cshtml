@@ -7,11 +7,16 @@
 <div class="container mt-4 mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h3 mb-0 text-gray-800">
-            <i class="fas fa-exclamation-circle text-danger mr-2"></i> Driver Alerts & Support
+            <i class="fas fa-exclamation-circle text-danger mr-2"></i> Active Alerts
         </h1>
-        <a asp-action="Create" class="btn btn-danger shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50 mr-2"></i> New Alert Ticket
-        </a>
+        <div>
+            <a asp-action="History" class="btn btn-outline-secondary shadow-sm mr-2">
+                <i class="fas fa-history fa-sm mr-2"></i> Alert History
+            </a>
+            <a asp-action="Create" class="btn btn-danger shadow-sm">
+                <i class="fas fa-plus fa-sm text-white-50 mr-2"></i> New Alert Ticket
+            </a>
+        </div>
     </div>
 
     <div class="row">
@@ -31,9 +36,18 @@
             var iconClass = ticket.Category == "Truck Breakdown" ? "fa-tools" : "fa-info-circle";
             
             <div class="col-xl-4 col-md-6 mb-4">
-                <a asp-action="Details" asp-route-id="@ticket.Id" class="text-decoration-none">
-                    <div class="card shadow-sm h-100 py-2 @borderClass alert-card-hover">
-                        <div class="card-body">
+                <div class="card shadow-sm h-100 py-2 @borderClass alert-card-hover position-relative">
+                    
+                    <!-- Clear Button -->
+                    <form asp-action="Clear" method="post" class="position-absolute" style="top: 10px; right: 10px; z-index: 10;">
+                        <input type="hidden" name="id" value="@ticket.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-success border-0" title="Clear / Mark as Resolved" onclick="return confirm('Are you sure you want to clear this alert?');">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </form>
+
+                    <a asp-action="Details" asp-route-id="@ticket.Id" class="text-decoration-none stretched-link">
+                        <div class="card-body pr-5"> <!-- pr-5 to leave room for clear button -->
                             <div class="row no-gutters align-items-center">
                                 <div class="col mr-2">
                                     <div class="text-xs font-weight-bold text-uppercase mb-1 text-primary">
@@ -56,8 +70,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </a>
+                    </a>
+                </div>
             </div>
         }
     </div>

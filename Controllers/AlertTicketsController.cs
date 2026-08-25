@@ -22,12 +22,41 @@ namespace Truck_Maintanance_system.Controllers
         // GET: AlertTickets
         public async Task<IActionResult> Index()
         {
+            // Only show active alerts (Open and In Progress)
             var tickets = await _context.AlertTickets
                 .Include(t => t.Truck)
+                .Where(t => t.Status != "Resolved")
                 .OrderByDescending(t => t.Status == "Open")
                 .ThenByDescending(t => t.CreatedAt)
                 .ToListAsync();
             return View(tickets);
+        }
+
+        // GET: AlertTickets/History
+        public async Task<IActionResult> History()
+        {
+            // Show only resolved/cleared alerts
+            var tickets = await _context.AlertTickets
+                .Include(t => t.Truck)
+                .Where(t => t.Status == "Resolved")
+                .OrderByDescending(t => t.UpdatedAt)
+                .ToListAsync();
+            return View(tickets);
+        }
+
+        // POST: AlertTickets/Clear
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Clear(int id)
+        {
+            var ticket = await _context.AlertTickets.FindAsync(id);
+            if (ticket != null)
+            {
+                ticket.Status = "Resolved";
+                ticket.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         // GET: AlertTickets/Create
