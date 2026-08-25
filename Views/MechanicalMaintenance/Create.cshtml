@@ -41,13 +41,13 @@
                 <i class="fas fa-oil-can"></i> OIL
             </div>
             <div class="card-body">
-                @await Html.PartialAsync("_MaintenanceItemField", "EngineOil")
-                @await Html.PartialAsync("_MaintenanceItemField", "TransmissionOil")
-                @await Html.PartialAsync("_MaintenanceItemField", "Coolant")
-                @await Html.PartialAsync("_MaintenanceItemField", "CrownAxelOil")
-                @await Html.PartialAsync("_MaintenanceItemField", "HydraulicOil")
-                @await Html.PartialAsync("_MaintenanceItemField", "AdBlueDefOil")
-                @await Html.PartialAsync("_MaintenanceItemField", "BrakeFluid")
+                @await Html.PartialAsync("_MaintenanceItemField", ("EngineOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("TransmissionOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("Coolant", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("CrownAxelOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("HydraulicOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("AdBlueDefOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeFluid", "Oil"))
             </div>
         </div>
 
@@ -57,10 +57,10 @@
                 <i class="fas fa-truck-monster"></i> TYRES
             </div>
             <div class="card-body">
-                @await Html.PartialAsync("_MaintenanceItemField", "TyreCondition")
-                @await Html.PartialAsync("_MaintenanceItemField", "WheelAlignment")
-                @await Html.PartialAsync("_MaintenanceItemField", "SpareWheelCondition")
-                @await Html.PartialAsync("_MaintenanceItemField", "TyrePressure")
+                @await Html.PartialAsync("_MaintenanceItemField", ("TyreCondition", "Percentage"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("WheelAlignment", "Text"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("SpareWheelCondition", "Text"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("TyrePressure", "Text"))
             </div>
         </div>
 
@@ -70,12 +70,12 @@
                 <i class="fas fa-filter"></i> FILTER
             </div>
             <div class="card-body">
-                @await Html.PartialAsync("_MaintenanceItemField", "AirFilter")
-                @await Html.PartialAsync("_MaintenanceItemField", "OilFilter")
-                @await Html.PartialAsync("_MaintenanceItemField", "FuelFilter")
-                @await Html.PartialAsync("_MaintenanceItemField", "AcCabinFilter")
-                @await Html.PartialAsync("_MaintenanceItemField", "HydraulicFilter")
-                @await Html.PartialAsync("_MaintenanceItemField", "WaterSeparatorDieselFilter")
+                @await Html.PartialAsync("_MaintenanceItemField", ("AirFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("OilFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("FuelFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("AcCabinFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("HydraulicFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("WaterSeparatorDieselFilter", "Filter"))
             </div>
         </div>
 
@@ -85,11 +85,11 @@
                 <i class="fas fa-car-crash"></i> BRAKE
             </div>
             <div class="card-body">
-                @await Html.PartialAsync("_MaintenanceItemField", "BrakeShoeDiscFront")
-                @await Html.PartialAsync("_MaintenanceItemField", "BrakeShoeDiscRear")
-                @await Html.PartialAsync("_MaintenanceItemField", "BrakeRotorDiscFront")
-                @await Html.PartialAsync("_MaintenanceItemField", "BrakeRotorDiscRear")
-                @await Html.PartialAsync("_MaintenanceItemField", "AirCompressorAndValve")
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeShoeDiscFront", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeShoeDiscRear", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeRotorDiscFront", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeRotorDiscRear", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("AirCompressorAndValve", "Text"))
             </div>
         </div>
 
@@ -99,9 +99,9 @@
                 <i class="fas fa-tools"></i> OTHERS
             </div>
             <div class="card-body">
-                @await Html.PartialAsync("_MaintenanceItemField", "Greasing")
-                @await Html.PartialAsync("_MaintenanceItemField", "ClutchPlateLife")
-                @await Html.PartialAsync("_MaintenanceItemField", "BatteryCondition")
+                @await Html.PartialAsync("_MaintenanceItemField", ("Greasing", "Text"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("ClutchPlateLife", "Percentage"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BatteryCondition", "Percentage"))
             </div>
         </div>
 
