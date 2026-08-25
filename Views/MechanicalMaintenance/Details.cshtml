@@ -36,17 +36,21 @@
     @{
         void RenderDetail(string label, Truck_Maintanance_system.Models.MaintenanceItemDetails item)
         {
-            if (string.IsNullOrWhiteSpace(item.Status) && item.ValidForNextKm == null && item.ValidForNextDate == null) return;
+            if (string.IsNullOrWhiteSpace(item.Status) && item.ValidForNextKm == null && item.ValidForNextDate == null && item.Cost == null) return;
             
             <div class="col-md-6 mb-3">
-                <div class="border rounded p-3 bg-light h-100">
+                <div class="border rounded p-3 bg-light h-100 shadow-sm">
                     <h6 class="fw-bold text-dark border-bottom pb-2">@label</h6>
                     <div class="row mt-2">
-                        <div class="col-6">
-                            <span class="text-muted small">Action/Status:</span><br/>
+                        <div class="col-4">
+                            <span class="text-muted small">Status/Action:</span><br/>
                             <span class="fw-bold">@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</span>
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
+                            <span class="text-muted small">Expense:</span><br/>
+                            <span class="fw-bold text-success">@(item.Cost.HasValue ? $"₹{item.Cost.Value:F2}" : "—")</span>
+                        </div>
+                        <div class="col-4">
                             <span class="text-muted small">Next Due:</span><br/>
                             @if(item.ValidForNextKm.HasValue)
                             {
