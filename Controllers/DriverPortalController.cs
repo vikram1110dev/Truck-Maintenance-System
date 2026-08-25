@@ -112,7 +112,9 @@ namespace Truck_Maintanance_system.Controllers
             if (ticket == null) return NotFound();
 
             return View(ticket);
-            // POST: DriverPortal/SendMessage
+        }
+
+        // POST: DriverPortal/SendMessage
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SendMessage(int ticketId, string? messageText, IFormFile? imageFile, IFormFile? audioFile, [FromServices] IWebHostEnvironment env)
