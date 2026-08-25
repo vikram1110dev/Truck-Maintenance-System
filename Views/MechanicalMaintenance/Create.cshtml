@@ -118,7 +118,31 @@
             Array.prototype.slice.call(forms)
                 .forEach(function (form) {
                     form.addEventListener('submit', function (event) {
-                        if (!form.checkValidity()) {
+                        let isCustomValid = true;
+                        
+                        // Custom Date/Km Validation
+                        var items = form.querySelectorAll('.maintenance-item-group');
+                        items.forEach(function(item) {
+                            var kmInput = item.querySelector('.valid-km-input');
+                            var dateInput = item.querySelector('.valid-date-input');
+                            var errorDiv = item.querySelector('.date-km-error');
+                            
+                            // Require at least one of Date or Km to be filled
+                            if (!kmInput.value && !dateInput.value) {
+                                isCustomValid = false;
+                                kmInput.classList.add('is-invalid');
+                                dateInput.classList.add('is-invalid');
+                                errorDiv.classList.remove('d-none');
+                                errorDiv.classList.add('d-block');
+                            } else {
+                                kmInput.classList.remove('is-invalid');
+                                dateInput.classList.remove('is-invalid');
+                                errorDiv.classList.add('d-none');
+                                errorDiv.classList.remove('d-block');
+                            }
+                        });
+
+                        if (!form.checkValidity() || !isCustomValid) {
                             event.preventDefault()
                             event.stopPropagation()
                         }

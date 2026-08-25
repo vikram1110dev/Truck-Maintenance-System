@@ -5,7 +5,7 @@
     var inputType = Model.InputType;
 }
 
-<div class="row mb-3 align-items-center border-bottom pb-2">
+<div class="row mb-3 align-items-center border-bottom pb-2 maintenance-item-group">
     <div class="col-md-2 fw-bold text-truncate" title="@displayAttribute">
         @displayAttribute
     </div>
@@ -14,7 +14,7 @@
         
         @if (inputType == "Oil")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Checked">Checked</option>
                 <option value="Top-up">Top-up</option>
@@ -23,7 +23,7 @@
         }
         else if (inputType == "Filter")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Checked">Checked</option>
                 <option value="Cleaned">Cleaned</option>
@@ -32,7 +32,7 @@
         }
         else if (inputType == "Brake")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Checked">Checked</option>
                 <option value="Replaced">Replaced</option>
@@ -40,7 +40,7 @@
         }
         else if (inputType == "Percentage")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="100%">100% (New)</option>
                 <option value="90%">90%</option>
@@ -58,7 +58,7 @@
         }
         else if (inputType == "Alignment")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Aligned">Aligned / Good</option>
                 <option value="Needs Alignment">Needs Alignment</option>
@@ -66,7 +66,7 @@
         }
         else if (inputType == "Condition")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Excellent">Excellent</option>
                 <option value="Good">Good</option>
@@ -78,7 +78,7 @@
         }
         else if (inputType == "Pressure")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Normal">Normal</option>
                 <option value="Low">Low (Filled)</option>
@@ -88,7 +88,7 @@
         }
         else if (inputType == "Compressor")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Checked">Checked</option>
                 <option value="Repaired">Repaired</option>
@@ -97,7 +97,7 @@
         }
         else if (inputType == "Done")
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Done">Done</option>
                 <option value="Not Done">Not Done</option>
@@ -105,7 +105,7 @@
         }
         else
         {
-            <select name="@(propertyName).Status" class="form-select form-select-sm">
+            <select name="@(propertyName).Status" class="form-select form-select-sm" required>
                 <option value="">-- Select --</option>
                 <option value="Checked">Checked</option>
                 <option value="OK">OK</option>
@@ -117,19 +117,21 @@
         <label class="form-label small text-muted mb-1">Expense (₹)</label>
         <div class="input-group input-group-sm">
             <span class="input-group-text">₹</span>
-            <input name="@(propertyName).Cost" type="number" step="0.01" class="form-control" />
+            <input name="@(propertyName).Cost" type="number" step="0.01" class="form-control" required />
+            <div class="invalid-feedback">Required.</div>
         </div>
     </div>
     <div class="col-md-2">
         <label class="form-label small text-muted mb-1">Valid (km)</label>
         <div class="input-group input-group-sm">
-            <input name="@(propertyName).ValidForNextKm" type="number" class="form-control" />
+            <input name="@(propertyName).ValidForNextKm" type="number" class="form-control valid-km-input" />
             <span class="input-group-text">km</span>
         </div>
     </div>
     <div class="col-md-3">
         <label class="form-label small text-muted mb-1">Valid (Date)</label>
-        <input name="@(propertyName).ValidForNextDate" type="date" class="form-control form-control-sm" />
+        <input name="@(propertyName).ValidForNextDate" type="date" class="form-control form-control-sm valid-date-input" />
+        <div class="invalid-feedback d-none date-km-error">Must provide Valid Km or Valid Date.</div>
     </div>
     
     <div class="col-12 mt-2">
