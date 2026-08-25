@@ -1,8 +1,98 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "TMS Login";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Truck Maintenance System</title>
+    
+    <!-- Custom fonts for this template-->
+    <link href="~/lib/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Truck_Maintanance_system.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-light">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .role-btn {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .role-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,0.175)!important;
+    }
+    .role-btn-owner {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        color: white;
+    }
+    .role-btn-driver {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+        color: white;
+    }
+    .role-btn-owner:hover {
+        border-color: #4e73df;
+        color: white;
+    }
+    .role-btn-driver:hover {
+        border-color: #1cc88a;
+        color: white;
+    }
+    .icon-large {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="container login-container">
+    <div class="text-center w-100">
+        <h1 class="display-4 font-weight-bold text-gray-800 mb-2">Truck Maintenance System</h1>
+        <p class="lead text-muted mb-5">Select your role to continue</p>
+        
+        <div class="row justify-content-center">
+            <!-- Owner Button -->
+            <div class="col-md-5 col-lg-4 mb-4">
+                <a asp-controller="Trucks" asp-action="Index" class="text-decoration-none">
+                    <div class="card role-btn role-btn-owner shadow h-100 py-5 rounded-lg border-0">
+                        <div class="card-body text-center">
+                            <i class="fas fa-user-tie icon-large"></i>
+                            <h2 class="font-weight-bold mb-0">Owner / Admin</h2>
+                            <p class="mt-3 text-white-50">Manage fleet, tracking, and finances</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Driver Button -->
+            <div class="col-md-5 col-lg-4 mb-4">
+                <!-- For now, pointing to Alerts which acts as a driver portal -->
+                <a asp-controller="AlertTickets" asp-action="Index" class="text-decoration-none">
+                    <div class="card role-btn role-btn-driver shadow h-100 py-5 rounded-lg border-0">
+                        <div class="card-body text-center">
+                            <i class="fas fa-steering-wheel icon-large"></i>
+                            <h2 class="font-weight-bold mb-0">Driver</h2>
+                            <p class="mt-3 text-white-50">Report issues and view alerts</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
