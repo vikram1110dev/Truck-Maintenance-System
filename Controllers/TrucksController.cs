@@ -20,6 +20,26 @@ namespace Truck_Maintanance_system.Controllers
             return View(await _context.Trucks.ToListAsync());
         }
 
+        // GET: Trucks/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Trucks/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Truck truck)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(truck);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(truck);
+        }
+
         // GET: Trucks/Details/5
         public async Task<IActionResult> Details(int? id)
         {
