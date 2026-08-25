@@ -1,0 +1,189 @@
+@model IEnumerable<Truck_Maintanance_system.Models.TripRecord>
+
+@{
+    ViewData["Title"] = "Profit & Expense Dashboard";
+    
+    decimal totalRevenue = ViewBag.TotalRevenue;
+    decimal tripExpenses = ViewBag.TripExpenses;
+    decimal maintenanceCosts = ViewBag.MaintenanceCosts;
+    decimal documentCosts = ViewBag.DocumentCosts;
+    decimal totalExpenses = ViewBag.TotalExpenses;
+    decimal netProfit = ViewBag.NetProfit;
+    
+    int currentMonth = ViewBag.CurrentMonth;
+    int currentYear = ViewBag.CurrentYear;
+    
+    string monthName = new DateTime(currentYear, currentMonth, 1).ToString("MMMM");
+}
+
+<div class="container mt-4 mb-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-chart-line text-primary mr-2"></i> Financial Dashboard
+        </h1>
+        
+        <form method="get" class="form-inline d-flex align-items-center">
+            <select name="month" class="form-select form-select-sm mr-2" style="width: auto;">
+                @for(int i=1; i<=12; i++)
+                {
+                    <option value="@i" selected="@(i == currentMonth)">@new DateTime(currentYear, i, 1).ToString("MMMM")</option>
+                }
+            </select>
+            <select name="year" class="form-select form-select-sm mr-2 mx-2" style="width: auto;">
+                @for(int i=DateTime.Now.Year - 2; i<=DateTime.Now.Year; i++)
+                {
+                    <option value="@i" selected="@(i == currentYear)">@i</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-primary btn-sm shadow-sm">Filter</button>
+        </form>
+    </div>
+
+    <h5 class="text-muted mb-4">Displaying Data for: <strong class="text-dark">@monthName @currentYear</strong></h5>
+
+    <!-- Top KPI Cards -->
+    <div class="row">
+        <!-- Revenue Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Revenue (Freight)</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">₹@totalRevenue.ToString("N0")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expenses Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Total Expenses (All)</div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">₹@totalExpenses.ToString("N0")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Net Profit Card -->
+        <div class="col-xl-4 col-md-12 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2 @(netProfit >= 0 ? "bg-light-success" : "bg-light-danger")">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Net Profit</div>
+                            <div class="h2 mb-0 font-weight-bold @(netProfit >= 0 ? "text-success" : "text-danger")">
+                                ₹@netProfit.ToString("N0")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-wallet fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expense Breakdown -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Expense Breakdown Breakdown</h6>
+                </div>
+                <div class="card-body">
+                    <h4 class="small font-weight-bold">Trip Expenses (Fuel, Tolls, Bata) <span
+                            class="float-end">₹@tripExpenses.ToString("N0")</span></h4>
+                    <div class="progress mb-4">
+                        @{
+                            float tripPct = totalExpenses > 0 ? (float)(tripExpenses / totalExpenses * 100) : 0;
+                        }
+                        <div class="progress-bar bg-info" role="progressbar" style="width: @tripPct%"
+                            aria-valuenow="@tripPct" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">Mechanical Maintenance <span
+                            class="float-end">₹@maintenanceCosts.ToString("N0")</span></h4>
+                    <div class="progress mb-4">
+                        @{
+                            float maintPct = totalExpenses > 0 ? (float)(maintenanceCosts / totalExpenses * 100) : 0;
+                        }
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: @maintPct%"
+                            aria-valuenow="@maintPct" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <h4 class="small font-weight-bold">Document Renewals <span
+                            class="float-end">₹@documentCosts.ToString("N0")</span></h4>
+                    <div class="progress mb-4">
+                        @{
+                            float docPct = totalExpenses > 0 ? (float)(documentCosts / totalExpenses * 100) : 0;
+                        }
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: @docPct%"
+                            aria-valuenow="@docPct" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Trips Log Mini View -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4 h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Trips This Month (@ViewBag.TripsCount)</h6>
+                    <a asp-controller="Trips" asp-action="Create" class="btn btn-sm btn-primary shadow-sm"><i class="fas fa-plus fa-sm"></i> Log Trip</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        @if (!Model.Any())
+                        {
+                            <div class="p-4 text-center text-muted">No trips recorded for this month.</div>
+                        }
+                        @foreach (var trip in Model.Take(5))
+                        {
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="font-weight-bold">@trip.Truck?.LicensePlate</div>
+                                    <div class="small text-muted">@trip.RouteStart &rarr; @trip.RouteEnd</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-weight-bold text-success">+₹@trip.FreightRevenue.ToString("N0")</div>
+                                    <div class="small @(trip.NetTripProfit >= 0 ? "text-success" : "text-danger")">Net: ₹@trip.NetTripProfit.ToString("N0")</div>
+                                </div>
+                            </div>
+                        }
+                        @if(Model.Count() > 5)
+                        {
+                            <a asp-controller="Trips" asp-action="Index" class="list-group-item list-group-item-action text-center small text-primary font-weight-bold">
+                                View All Trips
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-light-success {
+        background-color: #eafbee !important;
+    }
+    .bg-light-danger {
+        background-color: #fce8e6 !important;
+    }
+</style>

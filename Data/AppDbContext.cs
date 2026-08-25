@@ -15,5 +15,6 @@ namespace Truck_Maintanance_system.Data
         public DbSet<TruckDocument> TruckDocuments { get; set; } = null!;
         public DbSet<AlertTicket> AlertTickets { get; set; } = null!;
         public DbSet<AlertMessage> AlertMessages { get; set; } = null!;
+        public DbSet<TripRecord> TripRecords { get; set; } = null!;
     }
 }
