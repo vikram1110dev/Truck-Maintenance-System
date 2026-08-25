@@ -15,6 +15,9 @@ namespace Truck_Maintanance_system.Models
         [Display(Name = "Odometer (km)")]
         public int OdometerKm { get; set; }
 
+        [Display(Name = "Valid For Next (km)")]
+        public int ValidForNextKm { get; set; }
+
         // --- OIL ---
         [Display(Name = "Engine Oil")]
         public string EngineOil { get; set; } = string.Empty;

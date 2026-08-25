@@ -15,7 +15,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">General Information</h6>
             </div>
             <div class="card-body row">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label asp-for="TruckId" class="form-label"></label>
                     <select asp-for="TruckId" class="form-select" required>
                         <option value="">Select a Truck...</option>
@@ -25,9 +25,19 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
                     <label asp-for="OdometerKm" class="form-label"></label>
-                    <input asp-for="OdometerKm" class="form-control" type="number" required />
+                    <div class="input-group">
+                        <input asp-for="OdometerKm" class="form-control" type="number" required />
+                        <span class="input-group-text">km</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="ValidForNextKm" class="form-label"></label>
+                    <div class="input-group">
+                        <input asp-for="ValidForNextKm" class="form-control" type="number" required placeholder="e.g. 15000" />
+                        <span class="input-group-text">km</span>
+                    </div>
                 </div>
             </div>
         </div>
