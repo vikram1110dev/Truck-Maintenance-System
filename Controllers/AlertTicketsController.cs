@@ -31,18 +31,9 @@ namespace Truck_Maintanance_system.Controllers
         }
 
         // GET: AlertTickets/Create
-        public async Task<IActionResult> Create(int? truckId)
+        public async Task<IActionResult> Create()
         {
-            if (truckId == null)
-            {
-                ViewBag.Trucks = await _context.Trucks.ToListAsync();
-                return View("SelectTruck");
-            }
-            
-            var truck = await _context.Trucks.FindAsync(truckId);
-            if (truck == null) return NotFound();
-
-            ViewBag.Truck = truck;
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
             return View();
         }
 
