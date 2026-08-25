@@ -1,0 +1,157 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Truck_Maintanance_system.Data;
+using Truck_Maintanance_system.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+
+namespace Truck_Maintanance_system.Controllers
+{
+    public class AlertTicketsController : Controller
+    {
+        private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
+
+        public AlertTicketsController(AppDbContext context, IWebHostEnvironment env)
+        {
+            _context = context;
+            _env = env;
+        }
+
+        // GET: AlertTickets
+        public async Task<IActionResult> Index()
+        {
+            var tickets = await _context.AlertTickets
+                .Include(t => t.Truck)
+                .OrderByDescending(t => t.Status == "Open")
+                .ThenByDescending(t => t.CreatedAt)
+                .ToListAsync();
+            return View(tickets);
+        }
+
+        // GET: AlertTickets/Create
+        public async Task<IActionResult> Create(int? truckId)
+        {
+            if (truckId == null)
+            {
+                ViewBag.Trucks = await _context.Trucks.ToListAsync();
+                return View("SelectTruck");
+            }
+            
+            var truck = await _context.Trucks.FindAsync(truckId);
+            if (truck == null) return NotFound();
+
+            ViewBag.Truck = truck;
+            return View();
+        }
+
+        // POST: AlertTickets/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(AlertTicket ticket)
+        {
+            if (ModelState.IsValid)
+            {
+                ticket.CreatedAt = DateTime.Now;
+                ticket.UpdatedAt = DateTime.Now;
+                _context.Add(ticket);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Details), new { id = ticket.Id });
+            }
+            return View(ticket);
+        }
+
+        // GET: AlertTickets/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var ticket = await _context.AlertTickets
+                .Include(t => t.Truck)
+                .Include(t => t.Messages)
+                .FirstOrDefaultAsync(m => m.Id == id);
+                
+            if (ticket == null) return NotFound();
+
+            return View(ticket);
+        }
+
+        // POST: AlertTickets/SendMessage
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendMessage(int ticketId, string senderRole, string? messageText, IFormFile? imageFile, IFormFile? audioFile)
+        {
+            var ticket = await _context.AlertTickets.FindAsync(ticketId);
+            if (ticket == null) return NotFound();
+
+            var message = new AlertMessage
+            {
+                TicketId = ticketId,
+                SenderRole = senderRole,
+                MessageText = messageText,
+                Timestamp = DateTime.Now
+            };
+
+            // Ensure directory exists
+            string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "alerts", ticketId.ToString());
+            if ((imageFile != null && imageFile.Length > 0) || (audioFile != null && audioFile.Length > 0))
+            {
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            }
+
+            // Handle Image
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                message.ImagePath = $"/uploads/alerts/{ticketId}/{uniqueFileName}";
+            }
+
+            // Handle Audio
+            if (audioFile != null && audioFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + "_voice.webm"; // Or m4a depending on browser
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await audioFile.CopyToAsync(stream);
+                }
+                message.AudioPath = $"/uploads/alerts/{ticketId}/{uniqueFileName}";
+            }
+
+            // Don't save empty messages unless it has media
+            if (!string.IsNullOrWhiteSpace(message.MessageText) || message.ImagePath != null || message.AudioPath != null)
+            {
+                _context.AlertMessages.Add(message);
+                
+                // Update ticket timestamp
+                ticket.UpdatedAt = DateTime.Now;
+                _context.Update(ticket);
+                
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = ticketId });
+        }
+        
+        // POST: AlertTickets/UpdateStatus
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(int id, string status)
+        {
+            var ticket = await _context.AlertTickets.FindAsync(id);
+            if (ticket != null)
+            {
+                ticket.Status = status;
+                ticket.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Details), new { id = id });
+        }
+    }
+}

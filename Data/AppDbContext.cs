@@ -13,5 +13,7 @@ namespace Truck_Maintanance_system.Data
         public DbSet<Truck> Trucks { get; set; } = null!;
         public DbSet<MechanicalMaintenanceRecord> MechanicalMaintenanceRecords { get; set; } = null!;
         public DbSet<TruckDocument> TruckDocuments { get; set; } = null!;
+        public DbSet<AlertTicket> AlertTickets { get; set; } = null!;
+        public DbSet<AlertMessage> AlertMessages { get; set; } = null!;
     }
 }
