@@ -1,0 +1,55 @@
+@model IEnumerable<Truck_Maintanance_system.Models.MechanicalMaintenanceRecord>
+
+@{
+    ViewData["Title"] = "Mechanical Maintenance Board";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Maintenance Board</h1>
+        <a asp-action="Create" class="btn btn-primary shadow-sm">
+            <i class="fas fa-plus fa-sm text-white-50"></i> Log Service
+        </a>
+    </div>
+
+    <div class="card shadow mb-4 border-0 rounded-lg">
+        <div class="card-header py-3 bg-white border-bottom-0">
+            <h6 class="m-0 font-weight-bold text-primary">Recent Logs</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date Logged</th>
+                            <th>Truck</th>
+                            <th>Odometer (km)</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.DateLogged.ToString("MMM dd, yyyy")</td>
+                                <td>
+                                    <span class="badge bg-secondary">@(item.Truck?.LicensePlate ?? "Unknown")</span>
+                                </td>
+                                <td>@item.OdometerKm km</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">No maintenance records found. Log a new service to get started!</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
