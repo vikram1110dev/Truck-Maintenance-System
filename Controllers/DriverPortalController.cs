@@ -67,5 +67,104 @@ namespace Truck_Maintanance_system.Controllers
 
             return View(activeTrip);
         }
+        // GET: DriverPortal/CreateAlert
+        public IActionResult CreateAlert()
+        {
+            var truckId = HttpContext.Session.GetInt32("DriverTruckId");
+            if (truckId == null) return RedirectToAction(nameof(Login));
+
+            return View();
+        }
+
+        // POST: DriverPortal/CreateAlert
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateAlert(AlertTicket ticket)
+        {
+            var truckId = HttpContext.Session.GetInt32("DriverTruckId");
+            if (truckId == null) return RedirectToAction(nameof(Login));
+
+            if (ModelState.IsValid)
+            {
+                ticket.TruckId = truckId.Value; // Force the session truck ID
+                ticket.CreatedAt = DateTime.Now;
+                ticket.UpdatedAt = DateTime.Now;
+                _context.Add(ticket);
+                await _context.SaveChangesAsync();
+                
+                // Redirect to a Driver-specific details view
+                return RedirectToAction(nameof(AlertDetails), new { id = ticket.Id });
+            }
+            return View(ticket);
+        }
+
+        // GET: DriverPortal/AlertDetails/5
+        public async Task<IActionResult> AlertDetails(int id)
+        {
+            var truckId = HttpContext.Session.GetInt32("DriverTruckId");
+            if (truckId == null) return RedirectToAction(nameof(Login));
+
+            var ticket = await _context.AlertTickets
+                .Include(t => t.Truck)
+                .Include(t => t.Messages)
+                .FirstOrDefaultAsync(m => m.Id == id && m.TruckId == truckId); // Security: Only their own truck
+                
+            if (ticket == null) return NotFound();
+
+            return View(ticket);
+            // POST: DriverPortal/SendMessage
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SendMessage(int ticketId, string? messageText, IFormFile? imageFile, IFormFile? audioFile, [FromServices] IWebHostEnvironment env)
+        {
+            var truckId = HttpContext.Session.GetInt32("DriverTruckId");
+            if (truckId == null) return RedirectToAction(nameof(Login));
+
+            var ticket = await _context.AlertTickets.FirstOrDefaultAsync(t => t.Id == ticketId && t.TruckId == truckId);
+            if (ticket == null) return NotFound();
+
+            var message = new AlertMessage
+            {
+                TicketId = ticketId,
+                SenderRole = "Driver", // Forced to Driver
+                MessageText = messageText,
+                Timestamp = DateTime.Now
+            };
+
+            string uploadsFolder = Path.Combine(env.WebRootPath, "uploads", "alerts", ticketId.ToString());
+            if ((imageFile != null && imageFile.Length > 0) || (audioFile != null && audioFile.Length > 0))
+            {
+                if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+            }
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                using (var stream = new FileStream(Path.Combine(uploadsFolder, uniqueFileName), FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+                message.ImagePath = $"/uploads/alerts/{ticketId}/{uniqueFileName}";
+            }
+
+            if (audioFile != null && audioFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + "_voice.webm";
+                using (var stream = new FileStream(Path.Combine(uploadsFolder, uniqueFileName), FileMode.Create))
+                {
+                    await audioFile.CopyToAsync(stream);
+                }
+                message.AudioPath = $"/uploads/alerts/{ticketId}/{uniqueFileName}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(message.MessageText) || message.ImagePath != null || message.AudioPath != null)
+            {
+                _context.AlertMessages.Add(message);
+                ticket.UpdatedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(AlertDetails), new { id = ticketId });
+        }
     }
 }

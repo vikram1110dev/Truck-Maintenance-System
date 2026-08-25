@@ -1,0 +1,54 @@
+@model Truck_Maintanance_system.Models.AlertTicket
+
+@{
+    ViewData["Title"] = "New Alert";
+    Layout = "_DriverLayout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-md-10 col-lg-8">
+        <div class="card shadow-sm border-0 rounded-lg border-bottom-danger">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h5 class="m-0 font-weight-bold text-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Raise New Alert
+                </h5>
+                <p class="text-muted small mt-2">Open a ticket for a breakdown, accident, or support request.</p>
+            </div>
+            <div class="card-body">
+                <form asp-action="CreateAlert" class="needs-validation">
+                    
+                    <div class="mb-3">
+                        <label asp-for="Category" class="form-label font-weight-bold"></label>
+                        <select asp-for="Category" class="form-control" required>
+                            <option value="">-- Select Category --</option>
+                            <option value="Truck Breakdown">Truck Breakdown</option>
+                            <option value="Accident">Accident</option>
+                            <option value="Maintenance Request">Maintenance Request</option>
+                            <option value="Document Issue">Document Issue</option>
+                            <option value="Toll/Fuel Request">Toll/Fuel Money Request</option>
+                            <option value="General Support">General Support</option>
+                        </select>
+                        <span asp-validation-for="Category" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Title" class="form-label font-weight-bold">Brief Summary</label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. Flat tyre on highway" required maxlength="100" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-danger shadow-sm px-4">
+                            Start Chat <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

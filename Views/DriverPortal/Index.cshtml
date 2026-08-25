@@ -69,8 +69,7 @@
                 
                 <p class="text-muted small">Need money for tolls? Break down? Send a message to the owner instantly.</p>
 
-                <!-- Currently points to Alert Tickets Create. Since we don't have a standalone driver alert view yet, we use the existing one, but we pass the truck ID -->
-                <a asp-controller="AlertTickets" asp-action="Create" asp-route-truckId="@(ViewContext.HttpContext.Session.GetInt32("DriverTruckId"))" class="btn btn-warning btn-lg btn-block shadow-sm text-dark font-weight-bold">
+                <a asp-controller="DriverPortal" asp-action="CreateAlert" class="btn btn-warning btn-lg btn-block shadow-sm text-dark font-weight-bold">
                     <i class="fas fa-paper-plane mr-2"></i> Send Alert
                 </a>
             </div>

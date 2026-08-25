@@ -1,0 +1,158 @@
+@model Truck_Maintanance_system.Models.AlertTicket
+
+@{
+    ViewData["Title"] = "Ticket #" + Model.Id;
+    Layout = "_DriverLayout";
+}
+
+<style>
+    .chat-container {
+        height: 60vh;
+        overflow-y: auto;
+        background-color: #e5ddd5;
+        padding: 20px;
+        border-radius: 8px 8px 0 0;
+        background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+    }
+    
+    .message-bubble {
+        max-width: 75%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .msg-driver {
+        background-color: #dcf8c6;
+        align-self: flex-end;
+        border-top-right-radius: 0;
+    }
+    
+    .msg-owner {
+        background-color: #ffffff;
+        align-self: flex-start;
+        border-top-left-radius: 0;
+    }
+    
+    .msg-time {
+        font-size: 0.7rem;
+        color: #999;
+        text-align: right;
+        margin-top: 5px;
+    }
+    
+    .chat-input-area {
+        background-color: #f0f0f0;
+        padding: 15px;
+        border-radius: 0 0 8px 8px;
+    }
+</style>
+
+<div class="container-fluid mt-2 mb-5">
+    
+    <!-- Header -->
+    <div class="card shadow-sm mb-3">
+        <div class="card-body py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h6 class="mb-1 text-dark font-weight-bold">
+                    #@Model.Id: @Model.Title
+                </h6>
+                <span class="badge @(Model.Status == "Resolved" ? "badge-success" : (Model.Status == "In Progress" ? "badge-info" : "badge-warning"))">
+                    @Model.Status
+                </span>
+            </div>
+            <div>
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-times"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="card shadow-sm border-0">
+        <div class="chat-container d-flex flex-column" id="chatBox">
+            @if (!Model.Messages.Any())
+            {
+                <div class="text-center my-auto bg-white p-3 rounded shadow-sm mx-auto" style="max-width: 300px;">
+                    <p class="text-muted mb-0 small">Support ticket created. Send a message to the fleet manager.</p>
+                </div>
+            }
+
+            @foreach (var msg in Model.Messages.OrderBy(m => m.Timestamp))
+            {
+                <div class="message-bubble @(msg.SenderRole == "Owner" ? "msg-owner" : "msg-driver")">
+                    <div class="font-weight-bold small mb-1" style="color: @(msg.SenderRole == "Owner" ? "#075e54" : "#128C7E")">
+                        @(msg.SenderRole == "Owner" ? "Fleet Manager" : "You")
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(msg.ImagePath))
+                    {
+                        <div class="mb-2">
+                            <img src="@msg.ImagePath" class="img-fluid rounded" style="max-height: 250px; cursor: pointer;" onclick="window.open(this.src)" />
+                        </div>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(msg.AudioPath))
+                    {
+                        <div class="mb-2">
+                            <audio controls class="w-100" style="height: 35px;">
+                                <source src="@msg.AudioPath" type="audio/webm">
+                                <source src="@msg.AudioPath" type="audio/mp4">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(msg.MessageText))
+                    {
+                        <div class="text-dark">@msg.MessageText</div>
+                    }
+
+                    <div class="msg-time">@msg.Timestamp.ToString("hh:mm tt")</div>
+                </div>
+            }
+        </div>
+
+        <!-- Input Area -->
+        <div class="chat-input-area">
+            @if (Model.Status != "Resolved")
+            {
+                <form asp-action="SendMessage" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="ticketId" value="@Model.Id" />
+
+                    <div class="input-group">
+                        <label class="btn btn-light border m-0" title="Attach Photo">
+                            <i class="fas fa-camera text-primary"></i>
+                            <input type="file" name="imageFile" accept="image/*" class="d-none" onchange="alert('Image attached!')" />
+                        </label>
+                        
+                        <label class="btn btn-light border m-0" title="Record Voice Note">
+                            <i class="fas fa-microphone text-danger"></i>
+                            <input type="file" name="audioFile" accept="audio/*" capture="microphone" class="d-none" onchange="alert('Voice note attached!')" />
+                        </label>
+                        
+                        <input type="text" name="messageText" class="form-control" placeholder="Type a message..." autocomplete="off" />
+                        
+                        <button class="btn btn-success px-4" type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="text-center text-muted py-2">
+                    <i class="fas fa-lock mr-2"></i> This ticket is resolved and closed for new messages.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function() {
+        var chatBox = document.getElementById("chatBox");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+</script>
