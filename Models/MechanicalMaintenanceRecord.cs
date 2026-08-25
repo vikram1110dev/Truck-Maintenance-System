@@ -1,105 +1,118 @@
-using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Truck_Maintanance_system.Models
 {
+    [Owned]
+    public class MaintenanceItemDetails
+    {
+        [Display(Name = "Action / Status")]
+        public string Status { get; set; } = string.Empty; // Check, Topup, Change, XX%
+
+        [Display(Name = "Valid For Next (km)")]
+        public int? ValidForNextKm { get; set; }
+
+        [Display(Name = "Valid For Next (Date)")]
+        [DataType(DataType.Date)]
+        public DateTime? ValidForNextDate { get; set; }
+    }
+
     public class MechanicalMaintenanceRecord
     {
         public int Id { get; set; }
+
+        [Required]
         public int TruckId { get; set; }
         public Truck? Truck { get; set; }
-        
-        [Display(Name = "Date Logged")]
+
+        [Required]
         public DateTime DateLogged { get; set; } = DateTime.Now;
 
         [Display(Name = "Odometer (km)")]
         public int OdometerKm { get; set; }
 
+        // General overall next valid km (kept for backwards compatibility or general use)
         [Display(Name = "Valid For Next (km)")]
         public int ValidForNextKm { get; set; }
 
         // --- OIL ---
         [Display(Name = "Engine Oil")]
-        public string EngineOil { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails EngineOil { get; set; } = new();
+
         [Display(Name = "Transmission Oil")]
-        public string TransmissionOil { get; set; } = string.Empty;
-        
-        public string Coolant { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails TransmissionOil { get; set; } = new();
+
+        [Display(Name = "Coolant")]
+        public MaintenanceItemDetails Coolant { get; set; } = new();
+
         [Display(Name = "Crown/Axel Oil")]
-        public string CrownAxelOil { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails CrownAxelOil { get; set; } = new();
+
         [Display(Name = "Hydraulic Oil")]
-        public string HydraulicOil { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails HydraulicOil { get; set; } = new();
+
         [Display(Name = "AdBlue (DEF Oil)")]
-        public string AdBlueDefOil { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails AdBlueDefOil { get; set; } = new();
+
         [Display(Name = "Brake Fluid")]
-        public string BrakeFluid { get; set; } = string.Empty;
+        public MaintenanceItemDetails BrakeFluid { get; set; } = new();
 
         // --- TYRES ---
-        [Display(Name = "Tyre Age & Condition (%)")]
-        public int TyreConditionPercent { get; set; }
-        
+        [Display(Name = "Tyre Age & Condition")]
+        public MaintenanceItemDetails TyreCondition { get; set; } = new();
+
         [Display(Name = "Wheel Alignment")]
-        public string WheelAlignment { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails WheelAlignment { get; set; } = new();
+
         [Display(Name = "Spare Wheel Condition")]
-        public string SpareWheelCondition { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails SpareWheelCondition { get; set; } = new();
+
         [Display(Name = "Tyre Pressure")]
-        public string TyrePressure { get; set; } = string.Empty;
+        public MaintenanceItemDetails TyrePressure { get; set; } = new();
 
         // --- FILTER ---
         [Display(Name = "Air Filter")]
-        public string AirFilter { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails AirFilter { get; set; } = new();
+
         [Display(Name = "Oil Filter")]
-        public string OilFilter { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails OilFilter { get; set; } = new();
+
         [Display(Name = "Fuel Filter")]
-        public string FuelFilter { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails FuelFilter { get; set; } = new();
+
         [Display(Name = "AC Cabin Filter")]
-        public string AcCabinFilter { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails AcCabinFilter { get; set; } = new();
+
         [Display(Name = "Hydraulic Filter")]
-        public string HydraulicFilter { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails HydraulicFilter { get; set; } = new();
+
         [Display(Name = "Water Separator / Diesel Filter")]
-        public string WaterSeparatorDieselFilter { get; set; } = string.Empty;
+        public MaintenanceItemDetails WaterSeparatorDieselFilter { get; set; } = new();
 
         // --- BRAKE ---
         [Display(Name = "Brake Shoe/Disc (Front)")]
-        public string BrakeShoeDiscFront { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails BrakeShoeDiscFront { get; set; } = new();
+
         [Display(Name = "Brake Shoe/Disc (Rear)")]
-        public string BrakeShoeDiscRear { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails BrakeShoeDiscRear { get; set; } = new();
+
         [Display(Name = "Brake Rotor/Disc (Front)")]
-        public string BrakeRotorDiscFront { get; set; } = string.Empty;
-        
+        public MaintenanceItemDetails BrakeRotorDiscFront { get; set; } = new();
+
         [Display(Name = "Brake Rotor/Disc (Rear)")]
-        public string BrakeRotorDiscRear { get; set; } = string.Empty;
-        
-        [Display(Name = "Air Compressor & Valve")]
-        public string AirCompressorAndValve { get; set; } = string.Empty;
+        public MaintenanceItemDetails BrakeRotorDiscRear { get; set; } = new();
+
+        [Display(Name = "Air Compressor and Valve")]
+        public MaintenanceItemDetails AirCompressorAndValve { get; set; } = new();
 
         // --- OTHERS ---
-        public string Greasing { get; set; } = string.Empty;
-        
-        [Display(Name = "Clutch Plate Life (%)")]
-        public int ClutchPlateLifePercent { get; set; }
-        
-        [Display(Name = "Clutch Plate Age (Months)")]
-        public int ClutchPlateAgeMonths { get; set; }
-        
-        [Display(Name = "Battery Condition (%)")]
-        public int BatteryConditionPercent { get; set; }
-        
-        [Display(Name = "Battery Age (Months)")]
-        public int BatteryAgeMonths { get; set; }
+        [Display(Name = "Greasing")]
+        public MaintenanceItemDetails Greasing { get; set; } = new();
+
+        [Display(Name = "Clutch Plate Life & Age")]
+        public MaintenanceItemDetails ClutchPlateLife { get; set; } = new();
+
+        [Display(Name = "Battery Condition & Age")]
+        public MaintenanceItemDetails BatteryCondition { get; set; } = new();
     }
 }

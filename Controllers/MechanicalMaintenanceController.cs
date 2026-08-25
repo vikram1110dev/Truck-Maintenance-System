@@ -24,6 +24,20 @@ namespace Truck_Maintanance_system.Controllers
             return View(records);
         }
 
+        // GET: MechanicalMaintenance/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var record = await _context.MechanicalMaintenanceRecords
+                .Include(m => m.Truck)
+                .FirstOrDefaultAsync(m => m.Id == id);
+                
+            if (record == null) return NotFound();
+
+            return View(record);
+        }
+
         // GET: MechanicalMaintenance/Create (The Log Service Form)
         public IActionResult Create()
         {

@@ -5,7 +5,7 @@
 }
 
 <div class="container mt-4 mb-5">
-    <h1 class="h3 mb-4 text-gray-800">Log Mechanical Maintenance</h1>
+    <h1 class="h3 mb-4 text-gray-800">Log Detailed Mechanical Maintenance</h1>
 
     <form asp-action="Create" class="needs-validation">
         
@@ -15,7 +15,7 @@
                 <h6 class="m-0 font-weight-bold text-primary">General Information</h6>
             </div>
             <div class="card-body row">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-6 mb-3">
                     <label asp-for="TruckId" class="form-label"></label>
                     <select asp-for="TruckId" class="form-select" required>
                         <option value="">Select a Truck...</option>
@@ -25,17 +25,10 @@
                         }
                     </select>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-6 mb-3">
                     <label asp-for="OdometerKm" class="form-label"></label>
                     <div class="input-group">
                         <input asp-for="OdometerKm" class="form-control" type="number" required />
-                        <span class="input-group-text">km</span>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="ValidForNextKm" class="form-label"></label>
-                    <div class="input-group">
-                        <input asp-for="ValidForNextKm" class="form-control" type="number" required placeholder="e.g. 15000" />
                         <span class="input-group-text">km</span>
                     </div>
                 </div>
@@ -47,35 +40,14 @@
             <div class="card-header bg-white text-warning font-weight-bold">
                 <i class="fas fa-oil-can"></i> OIL
             </div>
-            <div class="card-body row">
-                <div class="col-md-4 mb-3">
-                    <label asp-for="EngineOil" class="form-label"></label>
-                    <input asp-for="EngineOil" class="form-control" placeholder="Checked / Changed / Top-up" />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="TransmissionOil" class="form-label"></label>
-                    <input asp-for="TransmissionOil" class="form-control" />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="Coolant" class="form-label"></label>
-                    <input asp-for="Coolant" class="form-control" />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="CrownAxelOil" class="form-label"></label>
-                    <input asp-for="CrownAxelOil" class="form-control" />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="HydraulicOil" class="form-label"></label>
-                    <input asp-for="HydraulicOil" class="form-control" />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="AdBlueDefOil" class="form-label"></label>
-                    <input asp-for="AdBlueDefOil" class="form-control" />
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label asp-for="BrakeFluid" class="form-label"></label>
-                    <input asp-for="BrakeFluid" class="form-control" />
-                </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", "EngineOil")
+                @await Html.PartialAsync("_MaintenanceItemField", "TransmissionOil")
+                @await Html.PartialAsync("_MaintenanceItemField", "Coolant")
+                @await Html.PartialAsync("_MaintenanceItemField", "CrownAxelOil")
+                @await Html.PartialAsync("_MaintenanceItemField", "HydraulicOil")
+                @await Html.PartialAsync("_MaintenanceItemField", "AdBlueDefOil")
+                @await Html.PartialAsync("_MaintenanceItemField", "BrakeFluid")
             </div>
         </div>
 
@@ -84,26 +56,11 @@
             <div class="card-header bg-white text-secondary font-weight-bold">
                 <i class="fas fa-truck-monster"></i> TYRES
             </div>
-            <div class="card-body row">
-                <div class="col-md-3 mb-3">
-                    <label asp-for="TyreConditionPercent" class="form-label"></label>
-                    <div class="input-group">
-                        <input asp-for="TyreConditionPercent" class="form-control" type="number" min="0" max="100" />
-                        <span class="input-group-text">%</span>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="WheelAlignment" class="form-label"></label>
-                    <input asp-for="WheelAlignment" class="form-control" placeholder="Aligned / Needed" />
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="SpareWheelCondition" class="form-label"></label>
-                    <input asp-for="SpareWheelCondition" class="form-control" />
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="TyrePressure" class="form-label"></label>
-                    <input asp-for="TyrePressure" class="form-control" placeholder="e.g. 100 PSI OK" />
-                </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", "TyreCondition")
+                @await Html.PartialAsync("_MaintenanceItemField", "WheelAlignment")
+                @await Html.PartialAsync("_MaintenanceItemField", "SpareWheelCondition")
+                @await Html.PartialAsync("_MaintenanceItemField", "TyrePressure")
             </div>
         </div>
 
@@ -112,13 +69,13 @@
             <div class="card-header bg-white text-info font-weight-bold">
                 <i class="fas fa-filter"></i> FILTER
             </div>
-            <div class="card-body row">
-                <div class="col-md-4 mb-3"><label asp-for="AirFilter" class="form-label"></label><input asp-for="AirFilter" class="form-control" /></div>
-                <div class="col-md-4 mb-3"><label asp-for="OilFilter" class="form-label"></label><input asp-for="OilFilter" class="form-control" /></div>
-                <div class="col-md-4 mb-3"><label asp-for="FuelFilter" class="form-label"></label><input asp-for="FuelFilter" class="form-control" /></div>
-                <div class="col-md-4 mb-3"><label asp-for="AcCabinFilter" class="form-label"></label><input asp-for="AcCabinFilter" class="form-control" /></div>
-                <div class="col-md-4 mb-3"><label asp-for="HydraulicFilter" class="form-label"></label><input asp-for="HydraulicFilter" class="form-control" /></div>
-                <div class="col-md-4 mb-3"><label asp-for="WaterSeparatorDieselFilter" class="form-label"></label><input asp-for="WaterSeparatorDieselFilter" class="form-control" /></div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", "AirFilter")
+                @await Html.PartialAsync("_MaintenanceItemField", "OilFilter")
+                @await Html.PartialAsync("_MaintenanceItemField", "FuelFilter")
+                @await Html.PartialAsync("_MaintenanceItemField", "AcCabinFilter")
+                @await Html.PartialAsync("_MaintenanceItemField", "HydraulicFilter")
+                @await Html.PartialAsync("_MaintenanceItemField", "WaterSeparatorDieselFilter")
             </div>
         </div>
 
@@ -127,12 +84,12 @@
             <div class="card-header bg-white text-danger font-weight-bold">
                 <i class="fas fa-car-crash"></i> BRAKE
             </div>
-            <div class="card-body row">
-                <div class="col-md-3 mb-3"><label asp-for="BrakeShoeDiscFront" class="form-label"></label><input asp-for="BrakeShoeDiscFront" class="form-control" /></div>
-                <div class="col-md-3 mb-3"><label asp-for="BrakeShoeDiscRear" class="form-label"></label><input asp-for="BrakeShoeDiscRear" class="form-control" /></div>
-                <div class="col-md-3 mb-3"><label asp-for="BrakeRotorDiscFront" class="form-label"></label><input asp-for="BrakeRotorDiscFront" class="form-control" /></div>
-                <div class="col-md-3 mb-3"><label asp-for="BrakeRotorDiscRear" class="form-label"></label><input asp-for="BrakeRotorDiscRear" class="form-control" /></div>
-                <div class="col-md-6 mb-3"><label asp-for="AirCompressorAndValve" class="form-label"></label><input asp-for="AirCompressorAndValve" class="form-control" /></div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", "BrakeShoeDiscFront")
+                @await Html.PartialAsync("_MaintenanceItemField", "BrakeShoeDiscRear")
+                @await Html.PartialAsync("_MaintenanceItemField", "BrakeRotorDiscFront")
+                @await Html.PartialAsync("_MaintenanceItemField", "BrakeRotorDiscRear")
+                @await Html.PartialAsync("_MaintenanceItemField", "AirCompressorAndValve")
             </div>
         </div>
 
@@ -141,35 +98,20 @@
             <div class="card-header bg-white text-success font-weight-bold">
                 <i class="fas fa-tools"></i> OTHERS
             </div>
-            <div class="card-body row">
-                <div class="col-md-12 mb-3"><label asp-for="Greasing" class="form-label"></label><input asp-for="Greasing" class="form-control" placeholder="Completed?" /></div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="ClutchPlateLifePercent" class="form-label"></label>
-                    <div class="input-group"><input asp-for="ClutchPlateLifePercent" class="form-control" type="number" /><span class="input-group-text">%</span></div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="ClutchPlateAgeMonths" class="form-label"></label>
-                    <div class="input-group"><input asp-for="ClutchPlateAgeMonths" class="form-control" type="number" /><span class="input-group-text">Mo</span></div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="BatteryConditionPercent" class="form-label"></label>
-                    <div class="input-group"><input asp-for="BatteryConditionPercent" class="form-control" type="number" /><span class="input-group-text">%</span></div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <label asp-for="BatteryAgeMonths" class="form-label"></label>
-                    <div class="input-group"><input asp-for="BatteryAgeMonths" class="form-control" type="number" /><span class="input-group-text">Mo</span></div>
-                </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", "Greasing")
+                @await Html.PartialAsync("_MaintenanceItemField", "ClutchPlateLife")
+                @await Html.PartialAsync("_MaintenanceItemField", "BatteryCondition")
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">Save Maintenance Record</button>
+        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm">Save Detailed Maintenance Record</button>
     </form>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
-        // Bootstrap custom validation script
         (function () {
             'use strict'
             var forms = document.querySelectorAll('.needs-validation')

@@ -24,7 +24,6 @@
                             <th>Date Logged</th>
                             <th>Truck</th>
                             <th>Odometer (km)</th>
-                            <th>Next Service Due At</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -38,19 +37,7 @@
                                 </td>
                                 <td>@item.OdometerKm km</td>
                                 <td>
-                                    @if(item.ValidForNextKm > 0)
-                                    {
-                                        <span class="text-success fw-bold">@(item.OdometerKm + item.ValidForNextKm) km</span>
-                                        <br/>
-                                        <small class="text-muted">(in @item.ValidForNextKm km)</small>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted">Not Set</span>
-                                    }
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-info">View Details</button>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">View Detailed Report</a>
                                 </td>
                             </tr>
                         }

@@ -1,0 +1,130 @@
+@model Truck_Maintanance_system.Models.MechanicalMaintenanceRecord
+
+@{
+    ViewData["Title"] = "Maintenance Record Details";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Maintenance Record Details</h1>
+        <a asp-action="Index" class="btn btn-secondary shadow-sm">Back to Board</a>
+    </div>
+
+    <!-- General Info -->
+    <div class="card shadow-sm mb-4 border-0 rounded-lg">
+        <div class="card-header bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">General Information</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted small">Truck</p>
+                    <p class="fw-bold">@Model.Truck?.LicensePlate (@Model.Truck?.Make @Model.Truck?.Model)</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted small">Date Logged</p>
+                    <p class="fw-bold">@Model.DateLogged.ToString("MMMM dd, yyyy hh:mm tt")</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted small">Odometer</p>
+                    <p class="fw-bold">@Model.OdometerKm km</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @{
+        void RenderDetail(string label, Truck_Maintanance_system.Models.MaintenanceItemDetails item)
+        {
+            if (string.IsNullOrWhiteSpace(item.Status) && item.ValidForNextKm == null && item.ValidForNextDate == null) return;
+            
+            <div class="col-md-6 mb-3">
+                <div class="border rounded p-3 bg-light h-100">
+                    <h6 class="fw-bold text-dark border-bottom pb-2">@label</h6>
+                    <div class="row mt-2">
+                        <div class="col-6">
+                            <span class="text-muted small">Action/Status:</span><br/>
+                            <span class="fw-bold">@(string.IsNullOrEmpty(item.Status) ? "N/A" : item.Status)</span>
+                        </div>
+                        <div class="col-6">
+                            <span class="text-muted small">Next Due:</span><br/>
+                            @if(item.ValidForNextKm.HasValue)
+                            {
+                                <span class="badge bg-success mb-1">In @item.ValidForNextKm km (at @(Model.OdometerKm + item.ValidForNextKm.Value) km)</span><br/>
+                            }
+                            @if(item.ValidForNextDate.HasValue)
+                            {
+                                <span class="badge bg-info">By @item.ValidForNextDate.Value.ToString("MMM dd, yyyy")</span>
+                            }
+                            @if(!item.ValidForNextKm.HasValue && !item.ValidForNextDate.HasValue)
+                            {
+                                <span class="text-muted">Not Set</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <!-- OIL -->
+    <h5 class="text-warning mt-4 mb-3"><i class="fas fa-oil-can"></i> OIL</h5>
+    <div class="row">
+        @{
+            RenderDetail("Engine Oil", Model.EngineOil);
+            RenderDetail("Transmission Oil", Model.TransmissionOil);
+            RenderDetail("Coolant", Model.Coolant);
+            RenderDetail("Crown/Axel Oil", Model.CrownAxelOil);
+            RenderDetail("Hydraulic Oil", Model.HydraulicOil);
+            RenderDetail("AdBlue (DEF Oil)", Model.AdBlueDefOil);
+            RenderDetail("Brake Fluid", Model.BrakeFluid);
+        }
+    </div>
+
+    <!-- TYRES -->
+    <h5 class="text-secondary mt-4 mb-3"><i class="fas fa-truck-monster"></i> TYRES</h5>
+    <div class="row">
+        @{
+            RenderDetail("Tyre Condition", Model.TyreCondition);
+            RenderDetail("Wheel Alignment", Model.WheelAlignment);
+            RenderDetail("Spare Wheel Condition", Model.SpareWheelCondition);
+            RenderDetail("Tyre Pressure", Model.TyrePressure);
+        }
+    </div>
+
+    <!-- FILTERS -->
+    <h5 class="text-info mt-4 mb-3"><i class="fas fa-filter"></i> FILTERS</h5>
+    <div class="row">
+        @{
+            RenderDetail("Air Filter", Model.AirFilter);
+            RenderDetail("Oil Filter", Model.OilFilter);
+            RenderDetail("Fuel Filter", Model.FuelFilter);
+            RenderDetail("AC Cabin Filter", Model.AcCabinFilter);
+            RenderDetail("Hydraulic Filter", Model.HydraulicFilter);
+            RenderDetail("Water Separator/Diesel", Model.WaterSeparatorDieselFilter);
+        }
+    </div>
+
+    <!-- BRAKES -->
+    <h5 class="text-danger mt-4 mb-3"><i class="fas fa-car-crash"></i> BRAKES</h5>
+    <div class="row">
+        @{
+            RenderDetail("Brake Shoe/Disc (Front)", Model.BrakeShoeDiscFront);
+            RenderDetail("Brake Shoe/Disc (Rear)", Model.BrakeShoeDiscRear);
+            RenderDetail("Brake Rotor/Disc (Front)", Model.BrakeRotorDiscFront);
+            RenderDetail("Brake Rotor/Disc (Rear)", Model.BrakeRotorDiscRear);
+            RenderDetail("Air Compressor & Valve", Model.AirCompressorAndValve);
+        }
+    </div>
+
+    <!-- OTHERS -->
+    <h5 class="text-success mt-4 mb-3"><i class="fas fa-tools"></i> OTHERS</h5>
+    <div class="row">
+        @{
+            RenderDetail("Greasing", Model.Greasing);
+            RenderDetail("Clutch Plate Life", Model.ClutchPlateLife);
+            RenderDetail("Battery Condition", Model.BatteryCondition);
+        }
+    </div>
+
+</div>
