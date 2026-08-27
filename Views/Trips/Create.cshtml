@@ -21,12 +21,21 @@
                             <div class="card-body">
                                 <h6 class="font-weight-bold text-primary border-bottom pb-2 mb-3">Trip Details</h6>
                                 
-                                <div class="mb-3">
-                                    <label asp-for="TruckId" class="form-label font-weight-bold"></label>
-                                    <select asp-for="TruckId" class="form-select" asp-items="@(new SelectList(ViewBag.Trucks, "Id", "LicensePlate"))" required>
-                                        <option value="">-- Select Truck --</option>
-                                    </select>
-                                    <span asp-validation-for="TruckId" class="text-danger"></span>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="TruckId" class="form-label font-weight-bold"></label>
+                                        <select asp-for="TruckId" class="form-select" asp-items="@(new SelectList(ViewBag.Trucks, "Id", "LicensePlate"))" required>
+                                            <option value="">-- Select Truck --</option>
+                                        </select>
+                                        <span asp-validation-for="TruckId" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="DriverId" class="form-label font-weight-bold"></label>
+                                        <select asp-for="DriverId" class="form-select" asp-items="@(new SelectList(ViewBag.Drivers, "Id", "UserName"))" required>
+                                            <option value="">-- Select Driver --</option>
+                                        </select>
+                                        <span asp-validation-for="DriverId" class="text-danger"></span>
+                                    </div>
                                 </div>
 
                                 <div class="row">

@@ -70,6 +70,27 @@ using (var scope = app.Services.CreateScope())
                 await userManager.AddToRoleAsync(adminUser, "Admin");
             }
         }
+
+        // Seed Drivers
+        var drivers = new[] { "Ramesh", "Suresh", "Muthu" };
+        foreach (var driverName in drivers)
+        {
+            var email = $"{driverName.ToLower()}@tms.com";
+            if (await userManager.FindByEmailAsync(email) == null)
+            {
+                var driverUser = new IdentityUser
+                {
+                    UserName = email,
+                    Email = email,
+                    EmailConfirmed = true
+                };
+                var result = await userManager.CreateAsync(driverUser, "Driver@123");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(driverUser, "Driver");
+                }
+            }
+        }
     }
     catch (Exception ex)
     {

@@ -14,6 +14,12 @@ namespace Truck_Maintanance_system.Models
         public int TruckId { get; set; }
         public Truck? Truck { get; set; }
 
+        [Display(Name = "Driver")]
+        public string? DriverId { get; set; }
+
+        [ForeignKey("DriverId")]
+        public Microsoft.AspNetCore.Identity.IdentityUser? Driver { get; set; }
+
         [Required]
         [Display(Name = "Start Location")]
         public string RouteStart { get; set; } = string.Empty;

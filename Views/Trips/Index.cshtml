@@ -26,6 +26,7 @@
                     <thead class="bg-light text-dark">
                         <tr>
                             <th>Truck</th>
+                            <th>Driver</th>
                             <th>Route</th>
                             <th>Dates</th>
                             <th>Revenue</th>
@@ -48,6 +49,9 @@
                             <tr>
                                 <td class="align-middle font-weight-bold text-primary">
                                     <i class="fas fa-truck mr-1"></i> @item.Truck?.LicensePlate
+                                </td>
+                                <td class="align-middle text-info">
+                                    <i class="fas fa-user-tie mr-1"></i> @(item.Driver?.UserName?.Split('@')[0] ?? "Unassigned")
                                 </td>
                                 <td class="align-middle">
                                     @item.RouteStart <i class="fas fa-arrow-right text-muted mx-1"></i> @item.RouteEnd

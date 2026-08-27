@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Truck_Maintanance_system.Data;
 using Truck_Maintanance_system.Models;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace Truck_Maintanance_system.Controllers
 {
@@ -9,10 +12,12 @@ namespace Truck_Maintanance_system.Controllers
     public class TripsController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public TripsController(AppDbContext context)
+        public TripsController(AppDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Trips
@@ -20,6 +25,7 @@ namespace Truck_Maintanance_system.Controllers
         {
             var trips = await _context.TripRecords
                 .Include(t => t.Truck)
+                .Include(t => t.Driver)
                 .OrderByDescending(t => t.EndDate)
                 .ToListAsync();
             return View(trips);
@@ -29,6 +35,7 @@ namespace Truck_Maintanance_system.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Trucks = await _context.Trucks.ToListAsync();
+            ViewBag.Drivers = await _userManager.GetUsersInRoleAsync("Driver");
             return View();
         }
 
@@ -44,6 +51,7 @@ namespace Truck_Maintanance_system.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Trucks = await _context.Trucks.ToListAsync();
+            ViewBag.Drivers = await _userManager.GetUsersInRoleAsync("Driver");
             return View(trip);
         }
 
@@ -54,6 +62,7 @@ namespace Truck_Maintanance_system.Controllers
 
             var trip = await _context.TripRecords
                 .Include(t => t.Truck)
+                .Include(t => t.Driver)
                 .FirstOrDefaultAsync(m => m.Id == id);
                 
             if (trip == null) return NotFound();

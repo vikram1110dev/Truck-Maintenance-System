@@ -338,6 +338,9 @@ namespace Truck_Maintanance_system.Migrations
                     b.Property<decimal>("DriverAllowance")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DriverId")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("TEXT");
 
@@ -374,6 +377,8 @@ namespace Truck_Maintanance_system.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DriverId");
 
                     b.HasIndex("TruckId");
 
@@ -1352,11 +1357,17 @@ namespace Truck_Maintanance_system.Migrations
 
             modelBuilder.Entity("Truck_Maintanance_system.Models.TripRecord", b =>
                 {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId");
+
                     b.HasOne("Truck_Maintanance_system.Models.Truck", "Truck")
                         .WithMany()
                         .HasForeignKey("TruckId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Driver");
 
                     b.Navigation("Truck");
                 });

@@ -10,10 +10,12 @@ namespace Truck_Maintanance_system.Controllers
     public class DriverPortalController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> _userManager;
 
-        public DriverPortalController(AppDbContext context)
+        public DriverPortalController(AppDbContext context, Microsoft.AspNetCore.Identity.UserManager<Microsoft.AspNetCore.Identity.IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: DriverPortal/Login
@@ -60,11 +62,20 @@ namespace Truck_Maintanance_system.Controllers
 
             ViewBag.LicensePlate = HttpContext.Session.GetString("DriverLicensePlate");
             
-            // Find Active Trip for this truck (most recent one that hasn't ended, or just the most recent one for simplicity)
+            // Find Active Trip for this truck
             var activeTrip = await _context.TripRecords
                 .Where(t => t.TruckId == truckId)
                 .OrderByDescending(t => t.StartDate)
                 .FirstOrDefaultAsync();
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                var driverTrips = await _context.TripRecords.Where(t => t.DriverId == user.Id).ToListAsync();
+                ViewBag.TotalSalary = driverTrips.Sum(t => t.DriverAllowance);
+                ViewBag.TotalTrips = driverTrips.Count;
+                ViewBag.TotalDistance = driverTrips.Sum(t => t.DistanceKm);
+            }
 
             return View(activeTrip);
         }
