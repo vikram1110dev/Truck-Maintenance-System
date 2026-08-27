@@ -73,5 +73,37 @@ namespace Truck_Maintanance_system.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Trips/FuelAnalytics
+        public async Task<IActionResult> FuelAnalytics()
+        {
+            var trips = await _context.TripRecords.Include(t => t.Truck).ToListAsync();
+            
+            var viewModel = new Truck_Maintanance_system.Models.ViewModels.FuelAnalyticsViewModel();
+            
+            var groupedTrips = trips.Where(t => t.Truck != null).GroupBy(t => t.TruckId);
+            
+            foreach (var group in groupedTrips)
+            {
+                var truck = group.First().Truck!;
+                var stat = new Truck_Maintanance_system.Models.ViewModels.TruckFuelStat
+                {
+                    TruckId = truck.Id,
+                    TruckIdentifier = $"{truck.Make} {truck.Model} ({truck.LicensePlate})",
+                    TotalTrips = group.Count(),
+                    TotalDistance = group.Sum(t => t.DistanceKm),
+                    TotalFuelVolume = group.Sum(t => t.FuelVolumeLiters)
+                };
+                viewModel.TruckStats.Add(stat);
+                
+                viewModel.FleetTotalDistance += stat.TotalDistance;
+                viewModel.FleetTotalFuelVolume += stat.TotalFuelVolume;
+            }
+            
+            // Sort by efficiency descending
+            viewModel.TruckStats = viewModel.TruckStats.OrderByDescending(t => t.AverageEfficiency).ToList();
+
+            return View(viewModel);
+        }
     }
 }

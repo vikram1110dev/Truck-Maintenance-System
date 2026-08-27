@@ -48,11 +48,21 @@ namespace Truck_Maintanance_system.Models
         [Display(Name = "Other Expenses (₹)")]
         public decimal OtherExpenses { get; set; }
 
+        [Display(Name = "Distance (km)")]
+        public decimal DistanceKm { get; set; }
+
+        [Display(Name = "Fuel Volume (Liters)")]
+        public decimal FuelVolumeLiters { get; set; }
+
         [Display(Name = "Trip Notes")]
         public string? Notes { get; set; }
 
         // Computed Property (Not mapped to DB)
         [NotMapped]
         public decimal NetTripProfit => FreightRevenue - (FuelCost + TollCost + DriverAllowance + OtherExpenses);
+
+        [NotMapped]
+        [Display(Name = "Fuel Efficiency (km/l)")]
+        public decimal FuelEfficiency => FuelVolumeLiters > 0 ? Math.Round(DistanceKm / FuelVolumeLiters, 2) : 0;
     }
 }

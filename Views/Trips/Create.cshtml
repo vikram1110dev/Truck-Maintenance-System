@@ -57,6 +57,30 @@
                             </div>
                         </div>
 
+                        <!-- Trip Metrics -->
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="font-weight-bold text-info border-bottom pb-2 mb-3">Trip Metrics (Optional)</h6>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="DistanceKm" class="form-label font-weight-bold"></label>
+                                        <div class="input-group">
+                                            <input asp-for="DistanceKm" type="number" step="0.1" class="form-control" placeholder="0.0" />
+                                            <span class="input-group-text">km</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="FuelVolumeLiters" class="form-label font-weight-bold"></label>
+                                        <div class="input-group">
+                                            <input asp-for="FuelVolumeLiters" type="number" step="0.1" class="form-control" placeholder="0.0" />
+                                            <span class="input-group-text">Liters</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Financials -->
                         <div class="card shadow-sm border-0 mb-4">
                             <div class="card-body">

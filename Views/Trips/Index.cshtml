@@ -9,9 +9,14 @@
         <h1 class="h3 mb-0 text-gray-800">
             <i class="fas fa-route text-primary mr-2"></i> Trip Logs
         </h1>
-        <a asp-action="Create" class="btn btn-primary shadow-sm">
-            <i class="fas fa-plus fa-sm text-white-50 mr-2"></i> Log New Trip
-        </a>
+        <div>
+            <a asp-action="FuelAnalytics" class="btn btn-info shadow-sm mr-2 text-white">
+                <i class="fas fa-gas-pump fa-sm mr-1"></i> Fuel Analytics
+            </a>
+            <a asp-action="Create" class="btn btn-primary shadow-sm">
+                <i class="fas fa-plus fa-sm text-white-50 mr-2"></i> Log New Trip
+            </a>
+        </div>
     </div>
 
     <div class="card shadow-sm border-0">
@@ -25,6 +30,7 @@
                             <th>Dates</th>
                             <th>Revenue</th>
                             <th>Profit</th>
+                            <th>Fuel Effic.</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -32,7 +38,7 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                <td colspan="7" class="text-center py-4 text-muted">
                                     No trips logged yet.
                                 </td>
                             </tr>
@@ -54,6 +60,18 @@
                                 </td>
                                 <td class="align-middle font-weight-bold @(item.NetTripProfit >= 0 ? "text-success" : "text-danger")">
                                     ₹@item.NetTripProfit.ToString("N2")
+                                </td>
+                                <td class="align-middle">
+                                    @if(item.FuelEfficiency > 0)
+                                    {
+                                        <span class="badge @(item.FuelEfficiency >= 3.5m ? "badge-success" : (item.FuelEfficiency < 2.5m ? "badge-danger" : "badge-warning")) p-2">
+                                            @item.FuelEfficiency km/l
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">N/A</span>
+                                    }
                                 </td>
                                 <td class="align-middle">
                                     <div class="d-flex align-items-center">

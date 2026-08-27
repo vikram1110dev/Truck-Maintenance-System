@@ -140,6 +140,9 @@ namespace Truck_Maintanance_system.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<decimal>("DistanceKm")
+                        .HasColumnType("TEXT");
+
                     b.Property<decimal>("DriverAllowance")
                         .HasColumnType("TEXT");
 
@@ -150,6 +153,9 @@ namespace Truck_Maintanance_system.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("FuelCost")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("FuelVolumeLiters")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
