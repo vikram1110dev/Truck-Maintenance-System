@@ -76,6 +76,14 @@
                                         <span asp-validation-for="Vin" class="text-danger"></span>
                                     </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="CurrentOdometer" class="form-label font-weight-bold">Current Odometer (km)</label>
+                                        <input asp-for="CurrentOdometer" type="number" class="form-control" placeholder="e.g. 150000" required />
+                                        <span asp-validation-for="CurrentOdometer" class="text-danger"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

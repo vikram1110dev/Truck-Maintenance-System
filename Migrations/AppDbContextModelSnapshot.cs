@@ -188,6 +188,9 @@ namespace Truck_Maintanance_system.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("CurrentOdometer")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("LicensePlate")
                         .IsRequired()
                         .HasColumnType("TEXT");

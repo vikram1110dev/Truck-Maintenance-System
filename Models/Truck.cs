@@ -43,5 +43,9 @@ namespace Truck_Maintanance_system.Models
         
         [Required]
         public int Year { get; set; }
+
+        [Required]
+        [Display(Name = "Current Odometer (km)")]
+        public int CurrentOdometer { get; set; }
     }
 }

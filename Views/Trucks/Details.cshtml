@@ -72,7 +72,7 @@
                 <div class="col">
                     <h2 class="font-weight-bold text-gray-800 mb-0">@Model.Truck.LicensePlate</h2>
                     <h5 class="text-muted">@Model.Truck.Make @Model.Truck.Model (@Model.Truck.Year)</h5>
-                    <p class="mb-0 text-gray-500">VIN: @Model.Truck.Vin</p>
+                    <p class="mb-0 text-gray-500">VIN: @Model.Truck.Vin | <i class="fas fa-tachometer-alt ml-2 mr-1"></i> @Model.Truck.CurrentOdometer km</p>
                 </div>
                 <div class="col-auto text-right">
                     <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left"></i> Back to Fleet</a>
