@@ -5,6 +5,7 @@ using Truck_Maintanance_system.Models;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class TripsController : Controller
     {
         private readonly AppDbContext _context;

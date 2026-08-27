@@ -6,6 +6,7 @@ using Truck_Maintanance_system.Models;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin,Driver")]
     public class DriverPortalController : Controller
     {
         private readonly AppDbContext _context;

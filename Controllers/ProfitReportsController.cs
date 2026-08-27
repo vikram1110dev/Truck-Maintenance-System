@@ -4,6 +4,7 @@ using Truck_Maintanance_system.Data;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class ProfitReportsController : Controller
     {
         private readonly AppDbContext _context;

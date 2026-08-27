@@ -8,6 +8,7 @@ using System.IO;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class AlertTicketsController : Controller
     {
         private readonly AppDbContext _context;
