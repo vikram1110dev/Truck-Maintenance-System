@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Truck_Maintanance_system.Models
@@ -120,5 +121,23 @@ namespace Truck_Maintanance_system.Models
 
         [Display(Name = "Battery Condition & Age")]
         public MaintenanceItemDetails BatteryCondition { get; set; } = new();
+
+        // Computed Property: Total cost of all maintenance items
+        [NotMapped]
+        [Display(Name = "Total Cost (₹)")]
+        public decimal TotalCost =>
+            (EngineOil.Cost ?? 0) + (TransmissionOil.Cost ?? 0) +
+            (Coolant.Cost ?? 0) + (CrownAxelOil.Cost ?? 0) +
+            (HydraulicOil.Cost ?? 0) + (AdBlueDefOil.Cost ?? 0) +
+            (BrakeFluid.Cost ?? 0) + (TyreCondition.Cost ?? 0) +
+            (WheelAlignment.Cost ?? 0) + (SpareWheelCondition.Cost ?? 0) +
+            (TyrePressure.Cost ?? 0) + (AirFilter.Cost ?? 0) +
+            (OilFilter.Cost ?? 0) + (FuelFilter.Cost ?? 0) +
+            (AcCabinFilter.Cost ?? 0) + (HydraulicFilter.Cost ?? 0) +
+            (WaterSeparatorDieselFilter.Cost ?? 0) + (BrakeShoeDiscFront.Cost ?? 0) +
+            (BrakeShoeDiscRear.Cost ?? 0) + (BrakeRotorDiscFront.Cost ?? 0) +
+            (BrakeRotorDiscRear.Cost ?? 0) + (AirCompressorAndValve.Cost ?? 0) +
+            (Greasing.Cost ?? 0) + (ClutchPlateLife.Cost ?? 0) +
+            (BatteryCondition.Cost ?? 0);
     }
 }

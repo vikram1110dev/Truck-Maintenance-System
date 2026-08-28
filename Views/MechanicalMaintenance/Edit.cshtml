@@ -1,0 +1,124 @@
+@model Truck_Maintanance_system.Models.MechanicalMaintenanceRecord
+
+@{
+    ViewData["Title"] = "Edit Maintenance Record";
+}
+
+<div class="container mt-4 mb-5">
+    <h1 class="h3 mb-4 text-gray-800"><i class="fas fa-edit mr-2"></i>Edit Maintenance Record</h1>
+
+    <form asp-action="Edit" class="needs-validation">
+        <input type="hidden" asp-for="Id" />
+        
+        <!-- General Info -->
+        <div class="card shadow-sm mb-4 border-0 rounded-lg">
+            <div class="card-header bg-white">
+                <h6 class="m-0 font-weight-bold text-primary">General Information</h6>
+            </div>
+            <div class="card-body row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="TruckId" class="form-label"></label>
+                    <select asp-for="TruckId" class="form-select" required>
+                        <option value="">Select a Truck...</option>
+                        @foreach (var truck in ViewBag.Trucks)
+                        {
+                            <option value="@truck.Id">@truck.LicensePlate - @truck.Make @truck.Model</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="OdometerKm" class="form-label"></label>
+                    <div class="input-group">
+                        <input asp-for="OdometerKm" class="form-control" type="number" required />
+                        <span class="input-group-text">km</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="DateLogged" class="form-label"></label>
+                    <input asp-for="DateLogged" type="date" class="form-control" />
+                </div>
+            </div>
+        </div>
+
+        <!-- OIL -->
+        <div class="card shadow-sm mb-4 border-0 rounded-lg">
+            <div class="card-header bg-white text-warning font-weight-bold">
+                <i class="fas fa-oil-can"></i> OIL
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", ("EngineOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("TransmissionOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("Coolant", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("CrownAxelOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("HydraulicOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("AdBlueDefOil", "Oil"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeFluid", "Oil"))
+            </div>
+        </div>
+
+        <!-- TYRES -->
+        <div class="card shadow-sm mb-4 border-0 rounded-lg">
+            <div class="card-header bg-white text-secondary font-weight-bold">
+                <i class="fas fa-truck-monster"></i> TYRES
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", ("TyreCondition", "Percentage"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("WheelAlignment", "Alignment"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("SpareWheelCondition", "Condition"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("TyrePressure", "Pressure"))
+            </div>
+        </div>
+
+        <!-- FILTER -->
+        <div class="card shadow-sm mb-4 border-0 rounded-lg">
+            <div class="card-header bg-white text-info font-weight-bold">
+                <i class="fas fa-filter"></i> FILTER
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", ("AirFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("OilFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("FuelFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("AcCabinFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("HydraulicFilter", "Filter"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("WaterSeparatorDieselFilter", "Filter"))
+            </div>
+        </div>
+
+        <!-- BRAKE -->
+        <div class="card shadow-sm mb-4 border-0 rounded-lg">
+            <div class="card-header bg-white text-danger font-weight-bold">
+                <i class="fas fa-car-crash"></i> BRAKE
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeShoeDiscFront", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeShoeDiscRear", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeRotorDiscFront", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BrakeRotorDiscRear", "Brake"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("AirCompressorAndValve", "Compressor"))
+            </div>
+        </div>
+
+        <!-- OTHERS -->
+        <div class="card shadow-sm mb-4 border-0 rounded-lg">
+            <div class="card-header bg-white text-success font-weight-bold">
+                <i class="fas fa-tools"></i> OTHERS
+            </div>
+            <div class="card-body">
+                @await Html.PartialAsync("_MaintenanceItemField", ("Greasing", "Done"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("ClutchPlateLife", "Percentage"))
+                @await Html.PartialAsync("_MaintenanceItemField", ("BatteryCondition", "Percentage"))
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-warning btn-lg shadow-sm px-5">
+                <i class="fas fa-save mr-1"></i> Update Maintenance Record
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

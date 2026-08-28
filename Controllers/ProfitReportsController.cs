@@ -4,6 +4,7 @@ using Truck_Maintanance_system.Data;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class ProfitReportsController : Controller
     {
         private readonly AppDbContext _context;
@@ -22,41 +23,29 @@ namespace Truck_Maintanance_system.Controllers
             ViewBag.CurrentMonth = targetMonth;
             ViewBag.CurrentYear = targetYear;
 
+            // FIXED: Use date range comparison instead of .Month/.Year which can't be translated to SQL
+            var monthStart = new DateTime(targetYear, targetMonth, 1);
+            var monthEnd = monthStart.AddMonths(1);
+
             // 1. Get Trips for the month
             var trips = await _context.TripRecords
                 .Include(t => t.Truck)
-                .Where(t => t.EndDate.Month == targetMonth && t.EndDate.Year == targetYear)
+                .Where(t => t.EndDate >= monthStart && t.EndDate < monthEnd)
                 .ToListAsync();
 
             decimal totalRevenue = trips.Sum(t => t.FreightRevenue);
             decimal tripExpenses = trips.Sum(t => t.FuelCost + t.TollCost + t.DriverAllowance + t.OtherExpenses);
 
-            // 2. Get Maintenance Costs for the month
+            // 2. Get Maintenance Costs for the month — FIXED: Uses TotalCost computed property
             var maintenanceRecords = await _context.MechanicalMaintenanceRecords
-                .Where(m => m.DateLogged.Month == targetMonth && m.DateLogged.Year == targetYear)
+                .Where(m => m.DateLogged >= monthStart && m.DateLogged < monthEnd)
                 .ToListAsync();
 
-            decimal maintenanceCosts = 0;
-            foreach (var record in maintenanceRecords)
-            {
-                maintenanceCosts += (record.EngineOil.Cost ?? 0) + (record.TransmissionOil.Cost ?? 0) +
-                                    (record.Coolant.Cost ?? 0) + (record.CrownAxelOil.Cost ?? 0) +
-                                    (record.HydraulicOil.Cost ?? 0) + (record.AdBlueDefOil.Cost ?? 0) +
-                                    (record.BrakeFluid.Cost ?? 0) + (record.TyreCondition.Cost ?? 0) +
-                                    (record.WheelAlignment.Cost ?? 0) + (record.SpareWheelCondition.Cost ?? 0) +
-                                    (record.TyrePressure.Cost ?? 0) + (record.AirFilter.Cost ?? 0) +
-                                    (record.OilFilter.Cost ?? 0) + (record.FuelFilter.Cost ?? 0) +
-                                    (record.AcCabinFilter.Cost ?? 0) + (record.HydraulicFilter.Cost ?? 0) +
-                                    (record.WaterSeparatorDieselFilter.Cost ?? 0) + (record.BrakeShoeDiscFront.Cost ?? 0) +
-                                    (record.BrakeShoeDiscRear.Cost ?? 0) + (record.BrakeRotorDiscFront.Cost ?? 0) +
-                                    (record.BrakeRotorDiscRear.Cost ?? 0) + (record.AirCompressorAndValve.Cost ?? 0) +
-                                    (record.Greasing.Cost ?? 0) + (record.ClutchPlateLife.Cost ?? 0) +
-                                    (record.BatteryCondition.Cost ?? 0);
-            }
+            decimal maintenanceCosts = maintenanceRecords.Sum(r => r.TotalCost);
 
             // 3. Get Document Renewal Costs for the month
             var documentRecords = await _context.TruckDocuments
-                .Where(d => d.IssueDate.Month == targetMonth && d.IssueDate.Year == targetYear)
+                .Where(d => d.IssueDate >= monthStart && d.IssueDate < monthEnd)
                 .ToListAsync();
 
             decimal documentCosts = documentRecords.Sum(d => d.Cost ?? 0);

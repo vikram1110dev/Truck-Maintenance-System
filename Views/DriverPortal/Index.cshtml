@@ -14,6 +14,44 @@
             <span class="badge badge-success p-2" style="font-size: 1rem;"><i class="fas fa-truck mr-1"></i> @licensePlate</span>
         </div>
 
+        @if (ViewBag.TotalSalary != null)
+        {
+            <div class="row mb-4">
+                <div class="col-6">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Your Earnings</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">₹@Convert.ToDecimal(ViewBag.TotalSalary).ToString("N2")</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Total Trips</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalTrips</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-route fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
         @if (Model != null)
         {
             <div class="card border-left-success shadow h-100 py-2 mb-4 rounded-lg">

@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Truck_Maintanance_system.Models;
 
 namespace Truck_Maintanance_system.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -17,5 +19,56 @@ namespace Truck_Maintanance_system.Data
         public DbSet<AlertMessage> AlertMessages { get; set; } = null!;
         public DbSet<TripRecord> TripRecords { get; set; } = null!;
         public DbSet<TripLocation> TripLocations { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // --- Indexes on foreign keys for query performance ---
+            modelBuilder.Entity<TripRecord>().HasIndex(t => t.TruckId);
+            modelBuilder.Entity<TripRecord>().HasIndex(t => t.DriverId);
+            modelBuilder.Entity<MechanicalMaintenanceRecord>().HasIndex(m => m.TruckId);
+            modelBuilder.Entity<TruckDocument>().HasIndex(d => d.TruckId);
+            modelBuilder.Entity<AlertTicket>().HasIndex(a => a.TruckId);
+            modelBuilder.Entity<TripLocation>().HasIndex(l => l.TripId);
+            modelBuilder.Entity<AlertMessage>().HasIndex(m => m.TicketId);
+
+            // --- Relationships ---
+            modelBuilder.Entity<Truck>()
+                .HasMany(t => t.Trips)
+                .WithOne(tr => tr.Truck)
+                .HasForeignKey(tr => tr.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Truck>()
+                .HasMany(t => t.MaintenanceRecords)
+                .WithOne(m => m.Truck)
+                .HasForeignKey(m => m.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Truck>()
+                .HasMany(t => t.Documents)
+                .WithOne(d => d.Truck)
+                .HasForeignKey(d => d.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Truck>()
+                .HasMany(t => t.AlertTickets)
+                .WithOne(a => a.Truck)
+                .HasForeignKey(a => a.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AlertTicket>()
+                .HasMany(a => a.Messages)
+                .WithOne(m => m.Ticket)
+                .HasForeignKey(m => m.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<TripRecord>()
+                .HasMany<TripLocation>()
+                .WithOne(l => l.Trip)
+                .HasForeignKey(l => l.TripId)
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }

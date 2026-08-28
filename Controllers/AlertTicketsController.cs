@@ -8,6 +8,7 @@ using System.IO;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class AlertTicketsController : Controller
     {
         private readonly AppDbContext _context;
@@ -172,6 +173,42 @@ namespace Truck_Maintanance_system.Controllers
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Details), new { id = id });
+        }
+
+        // POST: AlertTickets/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var ticket = await _context.AlertTickets
+                .Include(t => t.Messages)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (ticket != null)
+            {
+                // Delete physical files folder if it exists
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "alerts", id.ToString());
+                if (Directory.Exists(uploadsFolder))
+                {
+                    try
+                    {
+                        Directory.Delete(uploadsFolder, true);
+                    }
+                    catch (Exception)
+                    {
+                        // Ignore file system lock
+                    }
+                }
+
+                if (ticket.Messages != null && ticket.Messages.Any())
+                {
+                    _context.AlertMessages.RemoveRange(ticket.Messages);
+                }
+
+                _context.AlertTickets.Remove(ticket);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(History));
         }
     }
 }

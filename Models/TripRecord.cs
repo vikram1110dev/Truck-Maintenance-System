@@ -4,7 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Truck_Maintanance_system.Models
 {
-    public class TripRecord
+    public enum TripStatus
+    {
+        InProgress,
+        Completed,
+        Cancelled
+    }
+
+    public class TripRecord : IValidatableObject
     {
         [Key]
         public int Id { get; set; }
@@ -13,6 +20,12 @@ namespace Truck_Maintanance_system.Models
         [Display(Name = "Truck")]
         public int TruckId { get; set; }
         public Truck? Truck { get; set; }
+
+        [Display(Name = "Driver")]
+        public string? DriverId { get; set; }
+
+        [ForeignKey("DriverId")]
+        public Microsoft.AspNetCore.Identity.IdentityUser? Driver { get; set; }
 
         [Required]
         [Display(Name = "Start Location")]
@@ -48,11 +61,34 @@ namespace Truck_Maintanance_system.Models
         [Display(Name = "Other Expenses (₹)")]
         public decimal OtherExpenses { get; set; }
 
+        [Display(Name = "Distance (km)")]
+        public decimal DistanceKm { get; set; }
+
+        [Display(Name = "Fuel Volume (Liters)")]
+        public decimal FuelVolumeLiters { get; set; }
+
         [Display(Name = "Trip Notes")]
         public string? Notes { get; set; }
 
         // Computed Property (Not mapped to DB)
         [NotMapped]
         public decimal NetTripProfit => FreightRevenue - (FuelCost + TollCost + DriverAllowance + OtherExpenses);
+
+        [NotMapped]
+        [Display(Name = "Fuel Efficiency (km/l)")]
+        public decimal FuelEfficiency => FuelVolumeLiters > 0 ? Math.Round(DistanceKm / FuelVolumeLiters, 2) : 0;
+
+        [Display(Name = "Trip Status")]
+        public TripStatus Status { get; set; } = TripStatus.Completed;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (EndDate < StartDate)
+            {
+                yield return new ValidationResult(
+                    "End Date must be on or after Start Date.",
+                    new[] { nameof(EndDate) });
+            }
+        }
     }
 }

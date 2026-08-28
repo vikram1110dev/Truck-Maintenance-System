@@ -1,0 +1,149 @@
+@model Truck_Maintanance_system.Models.ViewModels.FuelAnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Fuel Analytics";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-gas-pump text-info mr-2"></i> Fuel Efficiency Analytics
+        </h1>
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm mr-2"></i> Back to Trips
+        </a>
+    </div>
+
+    <!-- Fleet Averages Card -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Fleet Average Efficiency
+                            </div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">
+                                @Model.FleetAverageEfficiency <small class="text-muted" style="font-size:0.6em;">km/l</small>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-leaf fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Distance Tracked
+                            </div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">
+                                @Model.FleetTotalDistance.ToString("N0") <small class="text-muted" style="font-size:0.6em;">km</small>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-road fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Total Fuel Consumed
+                            </div>
+                            <div class="h3 mb-0 font-weight-bold text-gray-800">
+                                @Model.FleetTotalFuelVolume.ToString("N0") <small class="text-muted" style="font-size:0.6em;">L</small>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-fill-drip fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 bg-white">
+            <h6 class="m-0 font-weight-bold text-primary">Fleet Fuel Leaderboard</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th class="border-top-0">Rank</th>
+                            <th class="border-top-0">Truck</th>
+                            <th class="border-top-0 text-center">Trips Tracked</th>
+                            <th class="border-top-0 text-right">Distance (km)</th>
+                            <th class="border-top-0 text-right">Fuel (Liters)</th>
+                            <th class="border-top-0 text-center">Avg Efficiency (km/l)</th>
+                            <th class="border-top-0" style="width: 20%;">Performance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.TruckStats.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    No fuel data recorded yet.
+                                </td>
+                            </tr>
+                        }
+                        
+                        @{ int rank = 1; }
+                        @foreach (var stat in Model.TruckStats)
+                        {
+                            var efficiency = stat.AverageEfficiency;
+                            string progressClass = "bg-warning";
+                            if (efficiency >= 3.5m) progressClass = "bg-success";
+                            else if (efficiency < 2.5m) progressClass = "bg-danger";
+                            
+                            // Calculate a simple percentage for the progress bar (assume 5 km/l is max/100%)
+                            int pct = (int)Math.Min(100, (efficiency / 5m) * 100);
+
+                            <tr>
+                                <td class="align-middle font-weight-bold">
+                                    @if(rank == 1) { <i class="fas fa-trophy text-warning mr-1"></i> }
+                                    #@rank
+                                </td>
+                                <td class="align-middle font-weight-bold text-primary">
+                                    <a asp-controller="Trucks" asp-action="Details" asp-route-id="@stat.TruckId" class="text-decoration-none">
+                                        @stat.TruckIdentifier
+                                    </a>
+                                </td>
+                                <td class="align-middle text-center">@stat.TotalTrips</td>
+                                <td class="align-middle text-right">@stat.TotalDistance.ToString("N1")</td>
+                                <td class="align-middle text-right">@stat.TotalFuelVolume.ToString("N1")</td>
+                                <td class="align-middle text-center font-weight-bold" style="font-size:1.1em;">
+                                    @stat.AverageEfficiency
+                                </td>
+                                <td class="align-middle">
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar @progressClass" role="progressbar" style="width: @pct%" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -5,6 +5,7 @@ using Truck_Maintanance_system.Models;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class MechanicalMaintenanceController : Controller
     {
         private readonly AppDbContext _context;
@@ -39,16 +40,16 @@ namespace Truck_Maintanance_system.Controllers
         }
 
         // GET: MechanicalMaintenance/Create (The Log Service Form)
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            // For now, if no trucks exist, create a dummy one so the form works.
-            if (!_context.Trucks.Any())
+            // FIXED: Redirect to truck creation instead of silently creating a dummy
+            if (!await _context.Trucks.AnyAsync())
             {
-                _context.Trucks.Add(new Truck { Vin = "DUMMY123", LicensePlate = "TN-01-AB-1234", Make = "Tata", Model = "Prima", Year = 2023 });
-                _context.SaveChanges();
+                TempData["Warning"] = "Please add a truck first before logging maintenance.";
+                return RedirectToAction("Create", "Trucks");
             }
 
-            ViewBag.Trucks = _context.Trucks.ToList();
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
             return View(new MechanicalMaintenanceRecord { DateLogged = DateTime.Now });
         }
 
@@ -63,8 +64,74 @@ namespace Truck_Maintanance_system.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.Trucks = _context.Trucks.ToList();
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
             return View(record);
+        }
+
+        // GET: MechanicalMaintenance/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var record = await _context.MechanicalMaintenanceRecords.FindAsync(id);
+            if (record == null) return NotFound();
+
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
+            return View(record);
+        }
+
+        // POST: MechanicalMaintenance/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, MechanicalMaintenanceRecord record)
+        {
+            if (id != record.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(record);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _context.MechanicalMaintenanceRecords.AnyAsync(m => m.Id == id))
+                        return NotFound();
+                    throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
+            return View(record);
+        }
+
+        // GET: MechanicalMaintenance/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var record = await _context.MechanicalMaintenanceRecords
+                .Include(m => m.Truck)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (record == null) return NotFound();
+
+            return View(record);
+        }
+
+        // POST: MechanicalMaintenance/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var record = await _context.MechanicalMaintenanceRecords.FindAsync(id);
+            if (record != null)
+            {
+                _context.MechanicalMaintenanceRecords.Remove(record);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

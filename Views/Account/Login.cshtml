@@ -1,0 +1,112 @@
+@model Truck_Maintanance_system.Models.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In - TMS";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-xl-5 col-lg-6 col-md-8">
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <div class="p-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-truck-moving fa-3x text-primary mb-3"></i>
+                            <h1 class="h4 text-gray-900 font-weight-bold">Welcome Back!</h1>
+                            <p class="text-muted">Sign in to the Fleet Management System</p>
+                        </div>
+                        
+                        <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="user">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 font-weight-bold text-center"></div>
+                            
+                            <div class="form-group mb-4">
+                                <label asp-for="Email" class="ml-1 text-muted small font-weight-bold"></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-light border-right-0 rounded-left-pill">
+                                            <i class="fas fa-envelope text-primary"></i>
+                                        </span>
+                                    </div>
+                                    <input asp-for="Email" class="form-control form-control-user bg-light border-left-0 rounded-right-pill" placeholder="Enter Email Address..." required autofocus>
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small ml-2 mt-1 d-block"></span>
+                            </div>
+                            
+                            <div class="form-group mb-4">
+                                <label asp-for="Password" class="ml-1 text-muted small font-weight-bold"></label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-light border-right-0 rounded-left-pill">
+                                            <i class="fas fa-lock text-primary"></i>
+                                        </span>
+                                    </div>
+                                    <input asp-for="Password" class="form-control form-control-user bg-light border-left-0 rounded-right-pill" placeholder="Password" required>
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger small ml-2 mt-1 d-block"></span>
+                            </div>
+                            
+                            <div class="form-group mb-4 pl-2">
+                                <div class="custom-control custom-checkbox small">
+                                    <input asp-for="RememberMe" class="custom-control-input">
+                                    <label class="custom-control-label font-weight-bold text-muted" asp-for="RememberMe">
+                                        Remember Me
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-user btn-block font-weight-bold shadow-sm rounded-pill py-2">
+                                <i class="fas fa-sign-in-alt mr-2"></i> Login
+                            </button>
+                        </form>
+                        
+                        <hr class="mt-5 mb-4">
+                        <div class="text-center">
+                            <p class="small text-muted mb-0">Default Admin:</p>
+                            <p class="small font-weight-bold text-primary">admin@tms.com / Admin@123</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <style>
+        .form-control-user {
+            font-size: 0.9rem;
+            border-radius: 10rem;
+        }
+        .rounded-left-pill {
+            border-top-left-radius: 10rem !important;
+            border-bottom-left-radius: 10rem !important;
+            padding-left: 1.25rem;
+            padding-right: 1rem;
+        }
+        .rounded-right-pill {
+            border-top-right-radius: 10rem !important;
+            border-bottom-right-radius: 10rem !important;
+            padding-left: 0.5rem;
+        }
+        .input-group {
+            height: 3rem;
+        }
+        .input-group-text, .form-control {
+            height: 100%;
+        }
+        .input-group-text {
+            border: 1px solid #d1d3e2;
+        }
+        .form-control:focus {
+            border-color: #d1d3e2;
+            box-shadow: none;
+        }
+        .input-group:focus-within .input-group-text, 
+        .input-group:focus-within .form-control {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+    </style>
+}

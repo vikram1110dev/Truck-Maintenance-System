@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Truck_Maintanance_system.Data;
@@ -5,6 +6,7 @@ using Truck_Maintanance_system.Models;
 
 namespace Truck_Maintanance_system.Controllers
 {
+    [Authorize]
     public class LiveTrackingController : Controller
     {
         private readonly AppDbContext _context;
@@ -16,6 +18,7 @@ namespace Truck_Maintanance_system.Controllers
 
         // GET: LiveTracking/Driver/5
         // This is the page the driver opens on their mobile phone
+        [Authorize(Roles = "Admin,Driver")]
         public async Task<IActionResult> Driver(int? tripId)
         {
             if (tripId == null) return NotFound();
@@ -28,8 +31,14 @@ namespace Truck_Maintanance_system.Controllers
 
         // POST: API to receive pings from the driver's phone
         [HttpPost]
+        [Authorize(Roles = "Admin,Driver")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> PingLocation(int tripId, double lat, double lng)
         {
+            // Validate the trip exists
+            var tripExists = await _context.TripRecords.AnyAsync(t => t.Id == tripId);
+            if (!tripExists) return NotFound();
+
             var location = new TripLocation
             {
                 TripId = tripId,
@@ -46,6 +55,7 @@ namespace Truck_Maintanance_system.Controllers
 
         // GET: LiveTracking/Track/5
         // This is the page the Owner opens to see the map
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Track(int? tripId)
         {
             if (tripId == null) return NotFound();
@@ -58,6 +68,7 @@ namespace Truck_Maintanance_system.Controllers
 
         // GET: API to get the latest location for the map to consume
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetLatestLocation(int tripId)
         {
             var latest = await _context.TripLocations
