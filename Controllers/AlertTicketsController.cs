@@ -174,5 +174,33 @@ namespace Truck_Maintanance_system.Controllers
             }
             return RedirectToAction(nameof(Details), new { id = id });
         }
+
+        // POST: AlertTickets/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var ticket = await _context.AlertTickets.FindAsync(id);
+            if (ticket != null)
+            {
+                // Delete physical files folder if it exists
+                string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "alerts", id.ToString());
+                if (Directory.Exists(uploadsFolder))
+                {
+                    try
+                    {
+                        Directory.Delete(uploadsFolder, true);
+                    }
+                    catch (IOException)
+                    {
+                        // Log or handle error if directory is locked
+                    }
+                }
+
+                _context.AlertTickets.Remove(ticket);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(History));
+        }
     }
 }
