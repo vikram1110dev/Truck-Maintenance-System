@@ -180,7 +180,10 @@ namespace Truck_Maintanance_system.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var ticket = await _context.AlertTickets.FindAsync(id);
+            var ticket = await _context.AlertTickets
+                .Include(t => t.Messages)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
             if (ticket != null)
             {
                 // Delete physical files folder if it exists
@@ -191,10 +194,15 @@ namespace Truck_Maintanance_system.Controllers
                     {
                         Directory.Delete(uploadsFolder, true);
                     }
-                    catch (IOException)
+                    catch (Exception)
                     {
-                        // Log or handle error if directory is locked
+                        // Ignore file system lock
                     }
+                }
+
+                if (ticket.Messages != null && ticket.Messages.Any())
+                {
+                    _context.AlertMessages.RemoveRange(ticket.Messages);
                 }
 
                 _context.AlertTickets.Remove(ticket);

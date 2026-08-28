@@ -50,12 +50,11 @@
                             </div>
                         </a>
                         
-                        <div class="d-flex flex-column align-items-end justify-content-between ms-2">
+                        <div class="d-flex flex-column align-items-end justify-content-between ms-2" style="position: relative; z-index: 5;">
                             <!-- Delete Button Form -->
-                            <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this alert permanently?');">
-                                @Html.AntiForgeryToken()
+                            <form asp-controller="AlertTickets" asp-action="Delete" method="post">
                                 <input type="hidden" name="id" value="@ticket.Id" />
-                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1" title="Delete Alert Permanently">
+                                <button type="submit" class="btn btn-sm btn-outline-danger border-0 p-1" title="Delete Alert Permanently" onclick="return confirm('Are you sure you want to delete this alert permanently?');">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
