@@ -4,7 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Truck_Maintanance_system.Models
 {
-    public class TripRecord
+    public enum TripStatus
+    {
+        InProgress,
+        Completed,
+        Cancelled
+    }
+
+    public class TripRecord : IValidatableObject
     {
         [Key]
         public int Id { get; set; }
@@ -70,5 +77,18 @@ namespace Truck_Maintanance_system.Models
         [NotMapped]
         [Display(Name = "Fuel Efficiency (km/l)")]
         public decimal FuelEfficiency => FuelVolumeLiters > 0 ? Math.Round(DistanceKm / FuelVolumeLiters, 2) : 0;
+
+        [Display(Name = "Trip Status")]
+        public TripStatus Status { get; set; } = TripStatus.Completed;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (EndDate < StartDate)
+            {
+                yield return new ValidationResult(
+                    "End Date must be on or after Start Date.",
+                    new[] { nameof(EndDate) });
+            }
+        }
     }
 }

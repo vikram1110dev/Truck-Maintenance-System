@@ -16,9 +16,22 @@ namespace Truck_Maintanance_system.Controllers
         }
 
         // GET: Trucks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search)
         {
-            return View(await _context.Trucks.ToListAsync());
+            var query = _context.Trucks.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                query = query.Where(t =>
+                    t.LicensePlate.Contains(search) ||
+                    t.Make.Contains(search) ||
+                    t.Model.Contains(search) ||
+                    t.Vin.Contains(search));
+                ViewBag.Search = search;
+            }
+
+            return View(await query.OrderBy(t => t.LicensePlate).ToListAsync());
         }
 
         // GET: Trucks/Create
@@ -47,27 +60,114 @@ namespace Truck_Maintanance_system.Controllers
             return View(truck);
         }
 
-        // GET: Trucks/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Trucks/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
 
             var truck = await _context.Trucks.FindAsync(id);
             if (truck == null) return NotFound();
 
+            // Parse the license plate back into segments for editing
+            var parts = truck.LicensePlate.Split(' ');
+            if (parts.Length >= 4)
+            {
+                truck.StateCode = parts[0];
+                truck.RtoCode = parts[1];
+                truck.SeriesCode = parts[2];
+                truck.SerialNumber = parts[3];
+            }
+
+            return View(truck);
+        }
+
+        // POST: Trucks/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Truck truck)
+        {
+            if (id != truck.Id) return NotFound();
+
+            ModelState.Remove(nameof(Truck.LicensePlate));
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    truck.LicensePlate = $"{truck.StateCode.ToUpper()} {truck.RtoCode} {truck.SeriesCode.ToUpper()} {truck.SerialNumber}";
+                    _context.Update(truck);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _context.Trucks.AnyAsync(t => t.Id == id))
+                        return NotFound();
+                    throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(truck);
+        }
+
+        // GET: Trucks/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var truck = await _context.Trucks.FindAsync(id);
+            if (truck == null) return NotFound();
+
+            // Get counts of related records for the warning
+            ViewBag.TripCount = await _context.TripRecords.CountAsync(t => t.TruckId == id);
+            ViewBag.MaintenanceCount = await _context.MechanicalMaintenanceRecords.CountAsync(m => m.TruckId == id);
+            ViewBag.DocumentCount = await _context.TruckDocuments.CountAsync(d => d.TruckId == id);
+            ViewBag.AlertCount = await _context.AlertTickets.CountAsync(a => a.TruckId == id);
+
+            return View(truck);
+        }
+
+        // POST: Trucks/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var truck = await _context.Trucks.FindAsync(id);
+            if (truck != null)
+            {
+                _context.Trucks.Remove(truck);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Trucks/Details/5 — Optimized: single query with Include chains instead of N+1
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var truck = await _context.Trucks
+                .Include(t => t.Trips)
+                .Include(t => t.MaintenanceRecords)
+                .Include(t => t.AlertTickets)
+                .Include(t => t.Documents)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (truck == null) return NotFound();
+
             var viewModel = new TruckTimelineViewModel
             {
-                Truck = truck
+                Truck = truck,
+                TotalTrips = truck.Trips.Count,
+                TotalMaintenanceLogs = truck.MaintenanceRecords.Count,
+                OpenAlerts = truck.AlertTickets.Count(a => a.Status == "Open")
             };
 
-            // 1. Fetch Trips
-            var trips = await _context.TripRecords.Where(t => t.TruckId == id).ToListAsync();
-            viewModel.TotalTrips = trips.Count;
-            foreach (var trip in trips)
+            // Build timeline events from the already-loaded navigation properties
+            foreach (var trip in truck.Trips)
             {
                 viewModel.Events.Add(new TimelineEvent
                 {
-                    EventDate = trip.EndDate, // Log trip at end date
+                    EventDate = trip.EndDate,
                     EventType = "Trip",
                     Title = $"Trip: {trip.RouteStart} to {trip.RouteEnd}",
                     Description = $"Freight: ₹{trip.FreightRevenue.ToString("N0")} | Net Profit: ₹{trip.NetTripProfit.ToString("N0")}",
@@ -77,27 +177,21 @@ namespace Truck_Maintanance_system.Controllers
                 });
             }
 
-            // 2. Fetch Maintenance
-            var maintenance = await _context.MechanicalMaintenanceRecords.Where(m => m.TruckId == id).ToListAsync();
-            viewModel.TotalMaintenanceLogs = maintenance.Count;
-            foreach (var m in maintenance)
+            foreach (var m in truck.MaintenanceRecords)
             {
                 viewModel.Events.Add(new TimelineEvent
                 {
                     EventDate = m.DateLogged,
                     EventType = "Maintenance",
                     Title = $"Maintenance Log (Odometer: {m.OdometerKm} km)",
-                    Description = "Logged mechanical maintenance.",
+                    Description = $"Total Cost: ₹{m.TotalCost.ToString("N0")}",
                     IconClass = "fa-tools",
                     ColorClass = "border-left-secondary",
                     Url = $"/MechanicalMaintenance/Details/{m.Id}"
                 });
             }
 
-            // 3. Fetch Alerts
-            var alerts = await _context.AlertTickets.Where(a => a.TruckId == id).ToListAsync();
-            viewModel.OpenAlerts = alerts.Count(a => a.Status == "Open");
-            foreach (var a in alerts)
+            foreach (var a in truck.AlertTickets)
             {
                 viewModel.Events.Add(new TimelineEvent
                 {
@@ -111,13 +205,11 @@ namespace Truck_Maintanance_system.Controllers
                 });
             }
 
-            // 4. Fetch Documents
-            var docs = await _context.TruckDocuments.Where(d => d.TruckId == id).ToListAsync();
-            foreach (var d in docs)
+            foreach (var d in truck.Documents)
             {
                 viewModel.Events.Add(new TimelineEvent
                 {
-                    EventDate = d.IssueDate, // Log at issue date
+                    EventDate = d.IssueDate,
                     EventType = "Document",
                     Title = $"{d.DocumentType} Issued/Renewed",
                     Description = $"Expires on {d.ExpiryDate.ToShortDateString()}",

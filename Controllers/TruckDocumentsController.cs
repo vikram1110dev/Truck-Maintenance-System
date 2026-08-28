@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Truck_Maintanance_system.Data;
 using Truck_Maintanance_system.Models;
+using Truck_Maintanance_system.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
@@ -13,12 +14,12 @@ namespace Truck_Maintanance_system.Controllers
     public class TruckDocumentsController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _env;
+        private readonly IFileUploadService _fileUploadService;
 
-        public TruckDocumentsController(AppDbContext context, IWebHostEnvironment env)
+        public TruckDocumentsController(AppDbContext context, IFileUploadService fileUploadService)
         {
             _context = context;
-            _env = env;
+            _fileUploadService = fileUploadService;
         }
 
         // GET: TruckDocuments
@@ -36,6 +37,7 @@ namespace Truck_Maintanance_system.Controllers
             if (truck == null) return NotFound();
 
             ViewBag.Truck = truck;
+            ViewBag.AllTrucks = await _context.Trucks.ToListAsync();
             var documents = await _context.TruckDocuments
                 .Where(d => d.TruckId == truckId)
                 .OrderBy(d => d.ExpiryDate)
@@ -58,27 +60,19 @@ namespace Truck_Maintanance_system.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (documentFile != null && documentFile.Length > 0)
+                try
                 {
-                    // Create upload directory if it doesn't exist
-                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "documents", model.TruckId.ToString());
-                    if (!Directory.Exists(uploadsFolder))
+                    if (documentFile != null && documentFile.Length > 0)
                     {
-                        Directory.CreateDirectory(uploadsFolder);
+                        model.AttachmentPath = await _fileUploadService.SaveFileAsync(
+                            documentFile, $"documents/{model.TruckId}");
                     }
-
-                    // Create unique file name
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(documentFile.FileName);
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    // Save file
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await documentFile.CopyToAsync(fileStream);
-                    }
-
-                    // Save path to DB
-                    model.AttachmentPath = $"/uploads/documents/{model.TruckId}/{uniqueFileName}";
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    ViewBag.TruckId = model.TruckId;
+                    return View(model);
                 }
 
                 _context.Add(model);
@@ -86,6 +80,59 @@ namespace Truck_Maintanance_system.Controllers
                 return RedirectToAction(nameof(Index), new { truckId = model.TruckId });
             }
             ViewBag.TruckId = model.TruckId;
+            return View(model);
+        }
+
+        // GET: TruckDocuments/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var doc = await _context.TruckDocuments.Include(d => d.Truck).FirstOrDefaultAsync(d => d.Id == id);
+            if (doc == null) return NotFound();
+
+            return View(doc);
+        }
+
+        // POST: TruckDocuments/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, TruckDocument model, IFormFile? documentFile)
+        {
+            if (id != model.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // If a new file is uploaded, replace the old one
+                    if (documentFile != null && documentFile.Length > 0)
+                    {
+                        // Delete old file
+                        if (!string.IsNullOrEmpty(model.AttachmentPath))
+                        {
+                            _fileUploadService.DeleteFile(model.AttachmentPath);
+                        }
+                        model.AttachmentPath = await _fileUploadService.SaveFileAsync(
+                            documentFile, $"documents/{model.TruckId}");
+                    }
+
+                    _context.Update(model);
+                    await _context.SaveChangesAsync();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    ModelState.AddModelError("", ex.Message);
+                    return View(model);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _context.TruckDocuments.AnyAsync(d => d.Id == id))
+                        return NotFound();
+                    throw;
+                }
+                return RedirectToAction(nameof(Index), new { truckId = model.TruckId });
+            }
             return View(model);
         }
 
@@ -100,14 +147,7 @@ namespace Truck_Maintanance_system.Controllers
                 int truckId = truckDocument.TruckId;
                 
                 // Delete physical file
-                if (!string.IsNullOrEmpty(truckDocument.AttachmentPath))
-                {
-                    string filePath = Path.Combine(_env.WebRootPath, truckDocument.AttachmentPath.TrimStart('/'));
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-                }
+                _fileUploadService.DeleteFile(truckDocument.AttachmentPath ?? "");
 
                 _context.TruckDocuments.Remove(truckDocument);
                 await _context.SaveChangesAsync();

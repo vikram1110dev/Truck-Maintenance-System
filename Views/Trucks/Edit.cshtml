@@ -1,0 +1,107 @@
+@model Truck_Maintanance_system.Models.Truck
+
+@{
+    ViewData["Title"] = "Edit Truck";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header bg-warning text-dark pt-4 pb-3">
+                    <h5 class="m-0 font-weight-bold">
+                        <i class="fas fa-edit mr-2"></i> Edit Truck — @Model.LicensePlate
+                    </h5>
+                </div>
+                <div class="card-body bg-light">
+                    <form asp-action="Edit" class="needs-validation">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="Status" />
+
+                        <div class="card shadow-sm border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="font-weight-bold text-primary border-bottom pb-2 mb-3">Vehicle Details</h6>
+
+                                <div class="mb-4">
+                                    <label class="form-label font-weight-bold">License Plate Number</label>
+                                    <div class="d-flex align-items-center">
+                                        <div class="mr-2 text-center" style="flex: 1;">
+                                            <input asp-for="StateCode" class="form-control text-uppercase text-center font-weight-bold" placeholder="TN" maxlength="2" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">STATE</small>
+                                        </div>
+                                        <span class="mx-1 font-weight-bold">-</span>
+                                        <div class="mx-2 text-center" style="flex: 1;">
+                                            <input asp-for="RtoCode" class="form-control text-center font-weight-bold" placeholder="01" maxlength="2" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">RTO</small>
+                                        </div>
+                                        <span class="mx-1 font-weight-bold">-</span>
+                                        <div class="mx-2 text-center" style="flex: 1;">
+                                            <input asp-for="SeriesCode" class="form-control text-uppercase text-center font-weight-bold" placeholder="AB" maxlength="2" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">SERIES</small>
+                                        </div>
+                                        <span class="mx-1 font-weight-bold">-</span>
+                                        <div class="ml-2 text-center" style="flex: 1.5;">
+                                            <input asp-for="SerialNumber" class="form-control text-center font-weight-bold" placeholder="1234" maxlength="4" required />
+                                            <small class="text-muted" style="font-size: 0.7rem;">NUMBER</small>
+                                        </div>
+                                    </div>
+                                    <div class="w-100">
+                                        <span asp-validation-for="StateCode" class="text-danger d-block"></span>
+                                        <span asp-validation-for="RtoCode" class="text-danger d-block"></span>
+                                        <span asp-validation-for="SeriesCode" class="text-danger d-block"></span>
+                                        <span asp-validation-for="SerialNumber" class="text-danger d-block"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Make" class="form-label font-weight-bold">Make</label>
+                                        <input asp-for="Make" class="form-control" placeholder="e.g. Tata, Ashok Leyland" required />
+                                        <span asp-validation-for="Make" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Model" class="form-label font-weight-bold">Model</label>
+                                        <input asp-for="Model" class="form-control" placeholder="e.g. Signa 4225.T" required />
+                                        <span asp-validation-for="Model" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Year" class="form-label font-weight-bold">Year</label>
+                                        <input asp-for="Year" type="number" class="form-control" placeholder="e.g. 2024" required />
+                                        <span asp-validation-for="Year" class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="Vin" class="form-label font-weight-bold">VIN (Chassis Number)</label>
+                                        <input asp-for="Vin" class="form-control text-uppercase" placeholder="Enter chassis number" required />
+                                        <span asp-validation-for="Vin" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label asp-for="CurrentOdometer" class="form-label font-weight-bold">Current Odometer (km)</label>
+                                        <input asp-for="CurrentOdometer" type="number" class="form-control" placeholder="e.g. 150000" required />
+                                        <span asp-validation-for="CurrentOdometer" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-2">
+                            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-warning shadow-sm px-5 btn-lg">
+                                <i class="fas fa-save mr-1"></i> Update Truck
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

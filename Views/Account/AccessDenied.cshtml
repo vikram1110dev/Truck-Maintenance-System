@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid mt-5 text-center">
+    <div class="error mx-auto" data-text="403" style="font-size: 7rem; font-weight: 900; color: #5a5c69; line-height: 1;">403</div>
+    <p class="lead text-gray-800 mb-5 font-weight-bold mt-3">Access Denied</p>
+    <p class="text-gray-500 mb-0">It looks like you don't have permission to view this page.</p>
+    <p class="text-gray-500 mb-4">Please login with an account that has the required privileges.</p>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary rounded-pill px-4 shadow-sm">
+        <i class="fas fa-home mr-2"></i> &larr; Back to Dashboard
+    </a>
+</div>

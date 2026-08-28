@@ -1,8 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace Truck_Maintanance_system.Models
 {
+    public enum TruckStatus
+    {
+        Active,
+        InMaintenance,
+        Inactive,
+        Retired
+    }
+
     public class Truck
     {
         public int Id { get; set; }
@@ -47,5 +56,14 @@ namespace Truck_Maintanance_system.Models
         [Required]
         [Display(Name = "Current Odometer (km)")]
         public int CurrentOdometer { get; set; }
+
+        [Display(Name = "Status")]
+        public TruckStatus Status { get; set; } = TruckStatus.Active;
+
+        // Navigation Properties
+        public ICollection<TripRecord> Trips { get; set; } = new List<TripRecord>();
+        public ICollection<MechanicalMaintenanceRecord> MaintenanceRecords { get; set; } = new List<MechanicalMaintenanceRecord>();
+        public ICollection<TruckDocument> Documents { get; set; } = new List<TruckDocument>();
+        public ICollection<AlertTicket> AlertTickets { get; set; } = new List<AlertTicket>();
     }
 }

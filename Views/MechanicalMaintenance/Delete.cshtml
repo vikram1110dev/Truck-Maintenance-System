@@ -1,0 +1,47 @@
+@model Truck_Maintanance_system.Models.MechanicalMaintenanceRecord
+
+@{
+    ViewData["Title"] = "Delete Maintenance Record";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header bg-danger text-white pt-4 pb-3">
+                    <h5 class="m-0 font-weight-bold">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Delete Maintenance Record
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <strong>Warning:</strong> This will permanently delete this maintenance record.
+                    </div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h6 class="font-weight-bold text-danger">Record Details</h6>
+                            <p class="mb-1"><strong>Truck:</strong> @Model.Truck?.LicensePlate — @Model.Truck?.Make @Model.Truck?.Model</p>
+                            <p class="mb-1"><strong>Date Logged:</strong> @Model.DateLogged.ToShortDateString()</p>
+                            <p class="mb-1"><strong>Odometer:</strong> @Model.OdometerKm.ToString("N0") km</p>
+                            <p class="mb-0"><strong>Total Cost:</strong> ₹@Model.TotalCost.ToString("N0")</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left mr-1"></i> Cancel
+                        </a>
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-danger shadow-sm px-5 btn-lg">
+                                <i class="fas fa-trash mr-1"></i> Yes, Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

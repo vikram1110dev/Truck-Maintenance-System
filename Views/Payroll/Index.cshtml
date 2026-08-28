@@ -1,0 +1,122 @@
+@model Truck_Maintanance_system.Models.ViewModels.DriverPayrollViewModel
+
+@{
+    ViewData["Title"] = "Driver Payroll & Performance";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-gray-800">
+            <i class="fas fa-hand-holding-usd text-success mr-2"></i> Driver Payroll & Performance
+        </h1>
+        
+        <!-- Month/Year Filter -->
+        <form method="get" class="form-inline bg-white p-2 rounded shadow-sm">
+            <div class="d-flex gap-2">
+                <select name="month" class="form-select" onchange="this.form.submit()">
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m" selected="@(ViewBag.CurrentMonth == m)">
+                            @System.Globalization.DateTimeFormatInfo.CurrentInfo.GetMonthName(m)
+                        </option>
+                    }
+                </select>
+                <select name="year" class="form-select" onchange="this.form.submit()">
+                    @for (int y = DateTime.Now.Year - 5; y <= DateTime.Now.Year + 1; y++)
+                    {
+                        <option value="@y" selected="@(ViewBag.CurrentYear == y)">
+                            @y
+                        </option>
+                    }
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Fleet Total Payroll</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹@Model.FleetTotalPayroll.ToString("N2")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Table -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Driver Performance & Salary Board</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light text-dark">
+                        <tr>
+                            <th>Rank</th>
+                            <th>Driver</th>
+                            <th>Total Trips</th>
+                            <th>Total Distance</th>
+                            <th>Fuel Effic.</th>
+                            <th class="text-right">Total Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.DriverStats.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    No driver stats available.
+                                </td>
+                            </tr>
+                        }
+                        
+                        @{ int rank = 1; }
+                        @foreach (var stat in Model.DriverStats.OrderByDescending(s => s.AverageEfficiency))
+                        {
+                            <tr>
+                                <td class="align-middle">
+                                    @if(rank == 1) { <i class="fas fa-medal text-warning fa-lg" title="Top Driver"></i> }
+                                    else if(rank == 2) { <i class="fas fa-medal text-secondary fa-lg" title="2nd Place"></i> }
+                                    else if(rank == 3) { <i class="fas fa-medal text-primary fa-lg" style="color: #cd7f32 !important;" title="3rd Place"></i> }
+                                    else { <span class="text-muted ml-2">@rank</span> }
+                                </td>
+                                <td class="align-middle font-weight-bold text-info">
+                                    <i class="fas fa-user-circle mr-1"></i> @stat.DriverName
+                                </td>
+                                <td class="align-middle">@stat.TotalTrips trips</td>
+                                <td class="align-middle">@stat.TotalDistance km</td>
+                                <td class="align-middle">
+                                    @if(stat.AverageEfficiency > 0)
+                                    {
+                                        <span class="badge @(stat.AverageEfficiency >= 3.5m ? "badge-success" : (stat.AverageEfficiency < 2.5m ? "badge-danger" : "badge-warning")) p-2">
+                                            @stat.AverageEfficiency km/l
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">N/A</span>
+                                    }
+                                </td>
+                                <td class="align-middle text-right font-weight-bold text-success">
+                                    ₹@stat.TotalSalary.ToString("N2")
+                                </td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

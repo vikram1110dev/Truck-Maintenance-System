@@ -19,6 +19,35 @@
         </div>
     </div>
 
+    <!-- Search & Filter Bar -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body py-2">
+            <form asp-action="Index" method="get" class="d-flex align-items-center flex-wrap gap-2">
+                <div class="input-group mr-2" style="max-width: 350px;">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control border-0 bg-light" placeholder="Search route or plate..." />
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <select name="status" class="form-select mr-2" style="max-width: 170px;" onchange="this.form.submit()">
+                    <option value="">All Status</option>
+                    @foreach (var s in Enum.GetValues<Truck_Maintanance_system.Models.TripStatus>())
+                    {
+                        <option value="@s" selected="@(ViewBag.StatusFilter == s.ToString())">@s</option>
+                    }
+                </select>
+                @if (!string.IsNullOrEmpty(ViewBag.Search as string) || !string.IsNullOrEmpty(ViewBag.StatusFilter as string))
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                }
+            </form>
+        </div>
+    </div>
+
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -32,6 +61,7 @@
                             <th>Revenue</th>
                             <th>Profit</th>
                             <th>Fuel Effic.</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -39,8 +69,8 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">
-                                    No trips logged yet.
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    No trips found.
                                 </td>
                             </tr>
                         }
@@ -60,10 +90,10 @@
                                     @item.StartDate.ToShortDateString() - @item.EndDate.ToShortDateString()
                                 </td>
                                 <td class="align-middle font-weight-bold text-success">
-                                    ₹@item.FreightRevenue.ToString("N2")
+                                    ₹@item.FreightRevenue.ToString("N0")
                                 </td>
                                 <td class="align-middle font-weight-bold @(item.NetTripProfit >= 0 ? "text-success" : "text-danger")">
-                                    ₹@item.NetTripProfit.ToString("N2")
+                                    ₹@item.NetTripProfit.ToString("N0")
                                 </td>
                                 <td class="align-middle">
                                     @if(item.FuelEfficiency > 0)
@@ -78,20 +108,28 @@
                                     }
                                 </td>
                                 <td class="align-middle">
+                                    @{
+                                        var statusBadge = item.Status switch
+                                        {
+                                            Truck_Maintanance_system.Models.TripStatus.Completed => "badge-success",
+                                            Truck_Maintanance_system.Models.TripStatus.InProgress => "badge-primary",
+                                            Truck_Maintanance_system.Models.TripStatus.Cancelled => "badge-secondary",
+                                            _ => "badge-secondary"
+                                        };
+                                    }
+                                    <span class="badge @statusBadge p-2">@item.Status</span>
+                                </td>
+                                <td class="align-middle">
                                     <div class="d-flex align-items-center">
-                                        <!-- Live Tracking Buttons -->
-                                        <a asp-controller="LiveTracking" asp-action="Track" asp-route-tripId="@item.Id" class="btn btn-sm btn-outline-success mr-2" title="View Live Map">
-                                            <i class="fas fa-map-marked-alt"></i> Map
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning mr-1" title="Edit">
+                                            <i class="fas fa-edit"></i>
                                         </a>
-                                        <a asp-controller="LiveTracking" asp-action="Driver" asp-route-tripId="@item.Id" target="_blank" class="btn btn-sm btn-outline-info mr-3" title="Driver Link (Share this)">
-                                            <i class="fas fa-mobile-alt"></i> Driver App
+                                        <a asp-controller="LiveTracking" asp-action="Track" asp-route-tripId="@item.Id" class="btn btn-sm btn-outline-success mr-1" title="View Live Map">
+                                            <i class="fas fa-map-marked-alt"></i>
                                         </a>
-                                        
-                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Delete this trip record?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Trip">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

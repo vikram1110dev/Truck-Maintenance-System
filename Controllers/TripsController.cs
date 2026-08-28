@@ -21,13 +21,30 @@ namespace Truck_Maintanance_system.Controllers
         }
 
         // GET: Trips
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? search, string? status)
         {
-            var trips = await _context.TripRecords
+            var query = _context.TripRecords
                 .Include(t => t.Truck)
                 .Include(t => t.Driver)
-                .OrderByDescending(t => t.EndDate)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim();
+                query = query.Where(t =>
+                    t.RouteStart.Contains(search) ||
+                    t.RouteEnd.Contains(search) ||
+                    (t.Truck != null && t.Truck.LicensePlate.Contains(search)));
+                ViewBag.Search = search;
+            }
+
+            if (!string.IsNullOrWhiteSpace(status) && Enum.TryParse<TripStatus>(status, out var tripStatus))
+            {
+                query = query.Where(t => t.Status == tripStatus);
+                ViewBag.StatusFilter = status;
+            }
+
+            var trips = await query.OrderByDescending(t => t.EndDate).ToListAsync();
             return View(trips);
         }
 
@@ -48,6 +65,46 @@ namespace Truck_Maintanance_system.Controllers
             {
                 _context.Add(trip);
                 await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
+            ViewBag.Drivers = await _userManager.GetUsersInRoleAsync("Driver");
+            return View(trip);
+        }
+
+        // GET: Trips/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var trip = await _context.TripRecords.FindAsync(id);
+            if (trip == null) return NotFound();
+
+            ViewBag.Trucks = await _context.Trucks.ToListAsync();
+            ViewBag.Drivers = await _userManager.GetUsersInRoleAsync("Driver");
+            return View(trip);
+        }
+
+        // POST: Trips/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, TripRecord trip)
+        {
+            if (id != trip.Id) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(trip);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await _context.TripRecords.AnyAsync(t => t.Id == id))
+                        return NotFound();
+                    throw;
+                }
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Trucks = await _context.Trucks.ToListAsync();

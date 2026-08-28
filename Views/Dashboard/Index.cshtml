@@ -1,0 +1,174 @@
+@model Truck_Maintanance_system.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Preventative Maintenance Dashboard";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fas fa-tachometer-alt text-primary mr-2"></i> Preventative Maintenance Dashboard</h1>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <!-- Total Trucks Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Trucks</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.TotalTrucks</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Trucks Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Trucks</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.ActiveTrucks</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Monthly Revenue Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Revenue (This Month)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹@Model.MonthlyRevenue.ToString("N0")</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Open Alerts Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Open Alerts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.OpenAlertCount</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Maintenance Alerts Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-tools mr-2"></i> Maintenance Alerts</h6>
+                    <span class="badge badge-primary badge-counter">@Model.MaintenanceAlerts.Count</span>
+                </div>
+                <div class="card-body">
+                    @if (!Model.MaintenanceAlerts.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                            <p class="text-gray-500 mb-0">All trucks are up to date on maintenance.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group">
+                            @foreach (var alert in Model.MaintenanceAlerts)
+                            {
+                                var isOverdue = alert.Status == "Overdue";
+                                var badgeClass = isOverdue ? "badge-danger" : "badge-warning";
+                                var borderClass = isOverdue ? "border-left-danger" : "border-left-warning";
+
+                                <a href="@Url.Action("Details", "Trucks", new { id = alert.TruckId })" class="list-group-item list-group-item-action mb-2 shadow-sm rounded @borderClass">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <h6 class="mb-1 font-weight-bold text-gray-800">@alert.TruckIdentifier</h6>
+                                        <span class="badge @badgeClass p-2">@alert.Status</span>
+                                    </div>
+                                    <p class="mb-1 mt-2 text-gray-600" style="font-size: 0.9rem;">
+                                        <strong>Current Odometer:</strong> @alert.CurrentOdometer km<br/>
+                                        <strong>Next Service Due At:</strong> @alert.NextServiceDueOdometer km
+                                    </p>
+                                    <small class="@(isOverdue ? "text-danger font-weight-bold" : "text-warning font-weight-bold")">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        @(isOverdue ? $"Overdue by {Math.Abs(alert.KmRemaining)} km" : $"Due in {alert.KmRemaining} km")
+                                    </small>
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Expiry Alerts Section -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-file-alt mr-2"></i> Document Expiry Alerts (Next 30 Days)</h6>
+                    <span class="badge badge-primary badge-counter">@Model.DocumentAlerts.Count</span>
+                </div>
+                <div class="card-body">
+                    @if (!Model.DocumentAlerts.Any())
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-shield-alt text-success fa-3x mb-3"></i>
+                            <p class="text-gray-500 mb-0">No documents are expiring soon.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group">
+                            @foreach (var alert in Model.DocumentAlerts)
+                            {
+                                var isExpired = alert.Status == "Expired";
+                                var badgeClass = isExpired ? "badge-danger" : "badge-warning";
+                                var borderClass = isExpired ? "border-left-danger" : "border-left-warning";
+
+                                <a href="@Url.Action("Details", "TruckDocuments", new { id = alert.DocumentId })" class="list-group-item list-group-item-action mb-2 shadow-sm rounded @borderClass">
+                                    <div class="d-flex w-100 justify-content-between align-items-center">
+                                        <h6 class="mb-1 font-weight-bold text-gray-800">@alert.TruckIdentifier</h6>
+                                        <span class="badge @badgeClass p-2">@alert.Status</span>
+                                    </div>
+                                    <p class="mb-1 mt-2 text-gray-600" style="font-size: 0.9rem;">
+                                        <strong>Document:</strong> @alert.DocumentType<br/>
+                                        <strong>Expiry Date:</strong> @alert.ExpiryDate.ToShortDateString()
+                                    </p>
+                                    <small class="@(isExpired ? "text-danger font-weight-bold" : "text-warning font-weight-bold")">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        @(isExpired ? $"Expired {Math.Abs(alert.DaysRemaining)} days ago" : $"Expiring in {alert.DaysRemaining} days")
+                                    </small>
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

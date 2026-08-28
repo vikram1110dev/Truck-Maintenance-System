@@ -1,0 +1,71 @@
+@model Truck_Maintanance_system.Models.Truck
+
+@{
+    ViewData["Title"] = "Delete Truck";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-lg">
+                <div class="card-header bg-danger text-white pt-4 pb-3">
+                    <h5 class="m-0 font-weight-bold">
+                        <i class="fas fa-exclamation-triangle mr-2"></i> Delete Truck — @Model.LicensePlate
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <strong>Warning:</strong> This will permanently delete this truck and ALL associated records:
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-route text-success mr-2"></i> Trips</span>
+                                    <span class="badge bg-danger rounded-pill">@ViewBag.TripCount records</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-tools text-secondary mr-2"></i> Maintenance Logs</span>
+                                    <span class="badge bg-danger rounded-pill">@ViewBag.MaintenanceCount records</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-file-alt text-info mr-2"></i> Documents</span>
+                                    <span class="badge bg-danger rounded-pill">@ViewBag.DocumentCount records</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-exclamation-triangle text-warning mr-2"></i> Alerts</span>
+                                    <span class="badge bg-danger rounded-pill">@ViewBag.AlertCount records</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="font-weight-bold text-danger">Truck Details</h6>
+                                    <p class="mb-1"><strong>Plate:</strong> @Model.LicensePlate</p>
+                                    <p class="mb-1"><strong>Vehicle:</strong> @Model.Make @Model.Model (@Model.Year)</p>
+                                    <p class="mb-1"><strong>VIN:</strong> @Model.Vin</p>
+                                    <p class="mb-0"><strong>Odometer:</strong> @Model.CurrentOdometer.ToString("N0") km</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between pt-2">
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                            <i class="fas fa-arrow-left mr-1"></i> Cancel
+                        </a>
+                        <form asp-action="Delete" method="post">
+                            <input type="hidden" asp-for="Id" />
+                            <button type="submit" class="btn btn-danger shadow-sm px-5 btn-lg">
+                                <i class="fas fa-trash mr-1"></i> Yes, Delete Permanently
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

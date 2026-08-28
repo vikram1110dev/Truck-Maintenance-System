@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Truck_Maintanance_system.Data;
 
@@ -10,9 +11,11 @@ using Truck_Maintanance_system.Data;
 namespace Truck_Maintanance_system.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260827143818_AddDriverToTrip")]
+    partial class AddDriverToTrip
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -370,9 +373,6 @@ namespace Truck_Maintanance_system.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
                     b.Property<decimal>("TollCost")
                         .HasColumnType("TEXT");
 
@@ -408,9 +408,6 @@ namespace Truck_Maintanance_system.Migrations
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Vin")
                         .IsRequired()
@@ -531,7 +528,7 @@ namespace Truck_Maintanance_system.Migrations
             modelBuilder.Entity("Truck_Maintanance_system.Models.AlertTicket", b =>
                 {
                     b.HasOne("Truck_Maintanance_system.Models.Truck", "Truck")
-                        .WithMany("AlertTickets")
+                        .WithMany()
                         .HasForeignKey("TruckId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -542,7 +539,7 @@ namespace Truck_Maintanance_system.Migrations
             modelBuilder.Entity("Truck_Maintanance_system.Models.MechanicalMaintenanceRecord", b =>
                 {
                     b.HasOne("Truck_Maintanance_system.Models.Truck", "Truck")
-                        .WithMany("MaintenanceRecords")
+                        .WithMany()
                         .HasForeignKey("TruckId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1368,7 +1365,7 @@ namespace Truck_Maintanance_system.Migrations
                         .HasForeignKey("DriverId");
 
                     b.HasOne("Truck_Maintanance_system.Models.Truck", "Truck")
-                        .WithMany("Trips")
+                        .WithMany()
                         .HasForeignKey("TruckId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1381,7 +1378,7 @@ namespace Truck_Maintanance_system.Migrations
             modelBuilder.Entity("Truck_Maintanance_system.Models.TruckDocument", b =>
                 {
                     b.HasOne("Truck_Maintanance_system.Models.Truck", "Truck")
-                        .WithMany("Documents")
+                        .WithMany()
                         .HasForeignKey("TruckId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1392,17 +1389,6 @@ namespace Truck_Maintanance_system.Migrations
             modelBuilder.Entity("Truck_Maintanance_system.Models.AlertTicket", b =>
                 {
                     b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("Truck_Maintanance_system.Models.Truck", b =>
-                {
-                    b.Navigation("AlertTickets");
-
-                    b.Navigation("Documents");
-
-                    b.Navigation("MaintenanceRecords");
-
-                    b.Navigation("Trips");
                 });
 #pragma warning restore 612, 618
         }
