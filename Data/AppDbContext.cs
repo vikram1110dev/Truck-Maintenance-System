@@ -19,6 +19,7 @@ namespace Truck_Maintanance_system.Data
         public DbSet<AlertMessage> AlertMessages { get; set; } = null!;
         public DbSet<TripRecord> TripRecords { get; set; } = null!;
         public DbSet<TripLocation> TripLocations { get; set; } = null!;
+        public DbSet<FuelLog> FuelLogs { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -32,12 +33,20 @@ namespace Truck_Maintanance_system.Data
             modelBuilder.Entity<AlertTicket>().HasIndex(a => a.TruckId);
             modelBuilder.Entity<TripLocation>().HasIndex(l => l.TripId);
             modelBuilder.Entity<AlertMessage>().HasIndex(m => m.TicketId);
+            modelBuilder.Entity<FuelLog>().HasIndex(f => f.TruckId);
+            modelBuilder.Entity<FuelLog>().HasIndex(f => f.FuelDate);
 
             // --- Relationships ---
             modelBuilder.Entity<Truck>()
                 .HasMany(t => t.Trips)
                 .WithOne(tr => tr.Truck)
                 .HasForeignKey(tr => tr.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Truck>()
+                .HasMany(t => t.FuelLogs)
+                .WithOne(f => f.Truck)
+                .HasForeignKey(f => f.TruckId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Truck>()
@@ -72,3 +81,4 @@ namespace Truck_Maintanance_system.Data
         }
     }
 }
+

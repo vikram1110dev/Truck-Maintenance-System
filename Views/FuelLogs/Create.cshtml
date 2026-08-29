@@ -1,0 +1,115 @@
+@model Truck_Maintanance_system.Models.FuelLog
+
+@{
+    ViewData["Title"] = "Log Fuel Refill";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="m-0 font-weight-bold"><i class="fas fa-gas-pump mr-2"></i> Log New Fuel Refill</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="TruckId" class="form-label font-weight-bold">Select Truck</label>
+                                <select asp-for="TruckId" class="form-select form-control" asp-items="ViewBag.TruckId" required>
+                                    <option value="">-- Choose Truck --</option>
+                                </select>
+                                <span asp-validation-for="TruckId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DriverName" class="form-label font-weight-bold">Driver Name</label>
+                                <input asp-for="DriverName" class="form-control" placeholder="e.g. Ramesh" required />
+                                <span asp-validation-for="DriverName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="FuelDate" class="form-label font-weight-bold">Date of Refill</label>
+                                <input asp-for="FuelDate" type="date" class="form-control" required />
+                                <span asp-validation-for="FuelDate" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="OdometerReading" class="form-label font-weight-bold">Odometer Reading (km)</label>
+                                <input asp-for="OdometerReading" type="number" class="form-control" placeholder="Current km" required />
+                                <span asp-validation-for="OdometerReading" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Liters" class="form-label font-weight-bold">Fuel Volume (Liters)</label>
+                                <input asp-for="Liters" id="litersInput" type="number" step="0.01" class="form-control" placeholder="e.g. 50.5" required oninput="calcTotal()" />
+                                <span asp-validation-for="Liters" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="PricePerLiter" class="form-label font-weight-bold">Rate / Liter (₹)</label>
+                                <input asp-for="PricePerLiter" id="priceInput" type="number" step="0.01" class="form-control" placeholder="e.g. 96.50" required oninput="calcTotal()" />
+                                <span asp-validation-for="PricePerLiter" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label font-weight-bold">Estimated Total (₹)</label>
+                                <input type="text" id="totalPreview" class="form-control bg-light font-weight-bold text-success" readonly value="₹0.00" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="FuelStation" class="form-label font-weight-bold">Fuel Station / Location</label>
+                                <input asp-for="FuelStation" class="form-control" placeholder="e.g. Indian Oil, NH44" />
+                                <span asp-validation-for="FuelStation" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PaymentMode" class="form-label font-weight-bold">Payment Method</label>
+                                <select asp-for="PaymentMode" class="form-select form-control">
+                                    <option value="Cash">Cash</option>
+                                    <option value="Fuel Card">Fuel Card</option>
+                                    <option value="UPI / Online">UPI / Online</option>
+                                    <option value="Company Account">Company Credit Account</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label font-weight-bold"><i class="fas fa-camera mr-1"></i> Upload Receipt / Fuel Slip (Optional)</label>
+                            <input type="file" name="receiptImage" class="form-control" accept="image/*,.pdf" />
+                            <small class="text-muted">Accepted formats: JPG, PNG, PDF (Max 5MB)</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label font-weight-bold">Additional Notes / Remarks</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Any details..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="fas fa-arrow-left mr-1"></i> Back to Logs
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                                <i class="fas fa-save mr-1"></i> Save Fuel Log
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function calcTotal() {
+            var liters = parseFloat(document.getElementById("litersInput").value) || 0;
+            var price = parseFloat(document.getElementById("priceInput").value) || 0;
+            var total = liters * price;
+            document.getElementById("totalPreview").value = "₹" + total.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    </script>
+}
