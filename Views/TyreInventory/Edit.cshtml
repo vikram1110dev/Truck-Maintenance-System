@@ -1,0 +1,107 @@
+@model Truck_Maintanance_system.Models.TyreInventory
+
+@{
+    ViewData["Title"] = "Update / Rotate Tyre";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="m-0 font-weight-bold"><i class="fas fa-edit mr-2"></i> Update / Rotate Tyre - @Model.SerialNumber</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="CreatedAt" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="SerialNumber" class="form-label font-weight-bold">Serial Number</label>
+                                <input asp-for="SerialNumber" class="form-control" required />
+                                <span asp-validation-for="SerialNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Brand" class="form-label font-weight-bold">Brand</label>
+                                <input asp-for="Brand" class="form-control" required />
+                                <span asp-validation-for="Brand" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Size" class="form-label font-weight-bold">Size</label>
+                                <input asp-for="Size" class="form-control" required />
+                                <span asp-validation-for="Size" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="TruckId" class="form-label font-weight-bold">Assigned Truck</label>
+                                <select asp-for="TruckId" class="form-select form-control" asp-items="ViewBag.TruckId">
+                                    <option value="">-- Unassigned / Spare Stock --</option>
+                                </select>
+                                <span asp-validation-for="TruckId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="AxlePosition" class="form-label font-weight-bold">Axle Position / Rotation</label>
+                                <select asp-for="AxlePosition" class="form-select form-control">
+                                    <option value="Front-Left (FL)">Front-Left (FL)</option>
+                                    <option value="Front-Right (FR)">Front-Right (FR)</option>
+                                    <option value="Rear-Left Outer (RLO)">Rear-Left Outer (RLO)</option>
+                                    <option value="Rear-Left Inner (RLI)">Rear-Left Inner (RLI)</option>
+                                    <option value="Rear-Right Outer (RRO)">Rear-Right Outer (RRO)</option>
+                                    <option value="Rear-Right Inner (RRI)">Rear-Right Inner (RRI)</option>
+                                    <option value="Stepney / Spare">Stepney / Spare</option>
+                                    <option value="Warehouse Stock">Warehouse Stock</option>
+                                </select>
+                                <span asp-validation-for="AxlePosition" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="TreadDepthMm" class="form-label font-weight-bold">Current Tread Depth (mm)</label>
+                                <input asp-for="TreadDepthMm" type="number" step="0.1" class="form-control" required />
+                                <span asp-validation-for="TreadDepthMm" class="text-danger small"></span>
+                                @if (Model.TreadDepthMm <= 4.0m)
+                                {
+                                    <small class="text-danger font-weight-bold"><i class="fas fa-exclamation-circle mr-1"></i> Warning: Tread is &le; 4mm (Retreading / Replacement needed!)</small>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Status" class="form-label font-weight-bold">Status</label>
+                                <select asp-for="Status" class="form-select form-control" asp-items="Html.GetEnumSelectList<Truck_Maintanance_system.Models.TyreStatus>()"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="PurchaseDate" class="form-label font-weight-bold">Purchase Date</label>
+                                <input asp-for="PurchaseDate" type="date" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="PurchaseCost" class="form-label font-weight-bold">Cost (₹)</label>
+                                <input asp-for="PurchaseCost" type="number" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label font-weight-bold">Notes / Rotation History</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="fas fa-arrow-left mr-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                                <i class="fas fa-save mr-1"></i> Update Tyre
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

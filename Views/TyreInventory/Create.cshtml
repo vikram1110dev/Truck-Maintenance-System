@@ -1,0 +1,101 @@
+@model Truck_Maintanance_system.Models.TyreInventory
+
+@{
+    ViewData["Title"] = "Add / Mount Tyre";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="m-0 font-weight-bold"><i class="fas fa-circle-notch mr-2"></i> Register New Tyre</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="SerialNumber" class="form-label font-weight-bold">Tyre Serial Number / DOT</label>
+                                <input asp-for="SerialNumber" class="form-control" placeholder="e.g. MRF-892348" required />
+                                <span asp-validation-for="SerialNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Brand" class="form-label font-weight-bold">Brand / Manufacturer</label>
+                                <input asp-for="Brand" class="form-control" placeholder="e.g. Apollo, MRF, Bridgestone" required />
+                                <span asp-validation-for="Brand" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Size" class="form-label font-weight-bold">Tyre Size / Spec</label>
+                                <input asp-for="Size" class="form-control" placeholder="e.g. 295/80R22.5" required />
+                                <span asp-validation-for="Size" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="TruckId" class="form-label font-weight-bold">Mount on Truck (Optional)</label>
+                                <select asp-for="TruckId" class="form-select form-control" asp-items="ViewBag.TruckId">
+                                    <option value="">-- Unassigned / Warehouse Stock --</option>
+                                </select>
+                                <span asp-validation-for="TruckId" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="AxlePosition" class="form-label font-weight-bold">Axle Position</label>
+                                <select asp-for="AxlePosition" class="form-select form-control">
+                                    <option value="Front-Left (FL)">Front-Left (FL)</option>
+                                    <option value="Front-Right (FR)">Front-Right (FR)</option>
+                                    <option value="Rear-Left Outer (RLO)">Rear-Left Outer (RLO)</option>
+                                    <option value="Rear-Left Inner (RLI)">Rear-Left Inner (RLI)</option>
+                                    <option value="Rear-Right Outer (RRO)">Rear-Right Outer (RRO)</option>
+                                    <option value="Rear-Right Inner (RRI)">Rear-Right Inner (RRI)</option>
+                                    <option value="Stepney / Spare">Stepney / Spare</option>
+                                    <option value="Warehouse Stock">Warehouse Stock</option>
+                                </select>
+                                <span asp-validation-for="AxlePosition" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="TreadDepthMm" class="form-label font-weight-bold">Initial Tread Depth (mm)</label>
+                                <input asp-for="TreadDepthMm" type="number" step="0.1" class="form-control" placeholder="e.g. 15.0" required />
+                                <span asp-validation-for="TreadDepthMm" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label asp-for="Status" class="form-label font-weight-bold">Status</label>
+                                <select asp-for="Status" class="form-select form-control" asp-items="Html.GetEnumSelectList<Truck_Maintanance_system.Models.TyreStatus>()"></select>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="PurchaseDate" class="form-label font-weight-bold">Purchase Date</label>
+                                <input asp-for="PurchaseDate" type="date" class="form-control" required />
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="PurchaseCost" class="form-label font-weight-bold">Purchase Cost (₹)</label>
+                                <input asp-for="PurchaseCost" type="number" class="form-control" placeholder="e.g. 24000" />
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Notes" class="form-label font-weight-bold">Notes / Inspection Comments</label>
+                            <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Tyre batch, invoice no, inspection note..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="fas fa-arrow-left mr-1"></i> Back to Inventory
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                                <i class="fas fa-save mr-1"></i> Save Tyre
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

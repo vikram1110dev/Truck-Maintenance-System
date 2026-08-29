@@ -66,6 +66,8 @@ namespace Truck_Maintanance_system.Models
         public ICollection<TruckDocument> Documents { get; set; } = new List<TruckDocument>();
         public ICollection<AlertTicket> AlertTickets { get; set; } = new List<AlertTicket>();
         public ICollection<FuelLog> FuelLogs { get; set; } = new List<FuelLog>();
+        public ICollection<TyreInventory> Tyres { get; set; } = new List<TyreInventory>();
     }
 }
+
 
