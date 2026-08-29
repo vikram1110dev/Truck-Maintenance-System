@@ -1,0 +1,157 @@
+@model Truck_Maintanance_system.Models.VehicleInspectionReport
+
+@{
+    ViewData["Title"] = "Vehicle Safety Inspection";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="m-0 font-weight-bold">
+                        <i class="fas fa-clipboard-check mr-2"></i> Driver Daily Vehicle Inspection Report (DVIR)
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="TruckId" class="form-label font-weight-bold">Vehicle</label>
+                                <select asp-for="TruckId" class="form-select form-control" asp-items="ViewBag.TruckId" required>
+                                    <option value="">-- Choose Truck --</option>
+                                </select>
+                                <span asp-validation-for="TruckId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DriverName" class="form-label font-weight-bold">Driver Name / ID</label>
+                                <input asp-for="DriverName" class="form-control" required />
+                                <span asp-validation-for="DriverName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="Type" class="form-label font-weight-bold">Inspection Type</label>
+                                <select asp-for="Type" class="form-select form-control" asp-items="Html.GetEnumSelectList<Truck_Maintanance_system.Models.InspectionType>()"></select>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="OdometerReading" class="form-label font-weight-bold">Current Odometer (km)</label>
+                                <input asp-for="OdometerReading" type="number" class="form-control" required />
+                                <span asp-validation-for="OdometerReading" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <h6 class="font-weight-bold text-dark border-bottom pb-2 mb-3">
+                            <i class="fas fa-tasks text-primary mr-1"></i> Multi-Point Safety Inspection Checklist
+                        </h6>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light border-0 p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="BrakesOk" class="custom-control-input" id="switchBrakes" checked />
+                                        <label class="custom-control-label font-weight-bold" for="switchBrakes">
+                                            Brake System & Emergency Brake
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Pedal feel, air pressure buildup, parking brake hold.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light border-0 p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="LightsAndSignalsOk" class="custom-control-input" id="switchLights" checked />
+                                        <label class="custom-control-label font-weight-bold" for="switchLights">
+                                            Lights, Indicators & Signals
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Headlights, high beam, hazards, brake lights.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light border-0 p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="TyresAndWheelsOk" class="custom-control-input" id="switchTyres" checked />
+                                        <label class="custom-control-label font-weight-bold" for="switchTyres">
+                                            Tyres, Rims & Wheel Lug Nuts
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Tread wear, inflation, rim cracks, tight wheel nuts.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light border-0 p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="EngineOilAndFluidsOk" class="custom-control-input" id="switchFluids" checked />
+                                        <label class="custom-control-label font-weight-bold" for="switchFluids">
+                                            Engine Oil, Coolant & Fluid Levels
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Dipstick level, radiator coolant, brake fluid.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light border-0 p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="SteeringAndHornOk" class="custom-control-input" id="switchSteering" checked />
+                                        <label class="custom-control-label font-weight-bold" for="switchSteering">
+                                            Steering & Horn Function
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Free play, power steering response, horn sound.</small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <div class="card bg-light border-0 p-3 h-100">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" asp-for="WipersAndGlassOk" class="custom-control-input" id="switchGlass" checked />
+                                        <label class="custom-control-label font-weight-bold" for="switchGlass">
+                                            Windshield, Mirrors & Wipers
+                                        </label>
+                                    </div>
+                                    <small class="text-muted">Wiper blades, washer fluid, clear view mirrors.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-primary mb-4 p-3 bg-light">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" asp-for="IsSafeToOperate" class="custom-control-input" id="switchSafe" checked />
+                                <label class="custom-control-label font-weight-bold text-primary h6 mb-0" for="switchSafe">
+                                    I certify that this vehicle is in safe condition to operate on public roads
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DefectsDescription" class="form-label font-weight-bold">Defects / Issues Observed (if any)</label>
+                            <textarea asp-for="DefectsDescription" class="form-control" rows="2" placeholder="Detail any broken lights, strange noises, low fluid..."></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Remarks" class="form-label font-weight-bold">General Remarks</label>
+                            <input asp-for="Remarks" class="form-control" placeholder="Optional notes" />
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="fas fa-arrow-left mr-1"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                                <i class="fas fa-check mr-1"></i> Submit Inspection Report
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
