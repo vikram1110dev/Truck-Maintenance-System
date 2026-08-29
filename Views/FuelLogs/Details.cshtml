@@ -1,0 +1,91 @@
+@model Truck_Maintanance_system.Models.FuelLog
+
+@{
+    ViewData["Title"] = "Fuel Log Details";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-gas-pump mr-2"></i> Fuel Refill Voucher #@Model.Id
+                    </h5>
+                    <span class="badge badge-success px-3 py-2">₹@Model.TotalAmount.ToString("N2")</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <h6 class="text-muted small mb-1">Truck / Vehicle</h6>
+                            <h5 class="font-weight-bold text-dark">@Model.Truck?.LicensePlate (@Model.Truck?.Make @Model.Truck?.Model)</h5>
+                        </div>
+                        <div class="col-sm-6 text-sm-right">
+                            <h6 class="text-muted small mb-1">Date</h6>
+                            <h5 class="font-weight-bold text-dark">@Model.FuelDate.ToString("dd MMMM yyyy")</h5>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Driver</div>
+                            <div class="font-weight-bold">@Model.DriverName</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Odometer at Fill</div>
+                            <div class="font-weight-bold">@Model.OdometerReading.ToString("N0") km</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Payment Mode</div>
+                            <div class="badge badge-info">@Model.PaymentMode</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Quantity</div>
+                            <div class="font-weight-bold text-primary h5">@Model.Liters.ToString("N2") L</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Price / Liter</div>
+                            <div class="font-weight-bold h5">₹@Model.PricePerLiter.ToString("N2")</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Fuel Station</div>
+                            <div class="font-weight-bold">@(string.IsNullOrEmpty(Model.FuelStation) ? "N/A" : Model.FuelStation)</div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="alert alert-light border mb-4">
+                            <h6 class="font-weight-bold small text-muted mb-1">Notes:</h6>
+                            <p class="mb-0">@Model.Notes</p>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.ReceiptImagePath))
+                    {
+                        <div class="mb-4">
+                            <h6 class="font-weight-bold text-muted small mb-2">Attached Receipt</h6>
+                            <div class="border rounded p-2 text-center bg-light">
+                                <img src="@Model.ReceiptImagePath" alt="Fuel Receipt" class="img-fluid rounded shadow-sm" style="max-height: 350px;" />
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="fas fa-arrow-left mr-1"></i> Back to List
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger rounded-pill px-4">
+                            <i class="fas fa-trash mr-1"></i> Delete Log
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

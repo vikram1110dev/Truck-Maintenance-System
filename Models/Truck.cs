@@ -65,5 +65,11 @@ namespace Truck_Maintanance_system.Models
         public ICollection<MechanicalMaintenanceRecord> MaintenanceRecords { get; set; } = new List<MechanicalMaintenanceRecord>();
         public ICollection<TruckDocument> Documents { get; set; } = new List<TruckDocument>();
         public ICollection<AlertTicket> AlertTickets { get; set; } = new List<AlertTicket>();
+        public ICollection<FuelLog> FuelLogs { get; set; } = new List<FuelLog>();
+        public ICollection<TyreInventory> Tyres { get; set; } = new List<TyreInventory>();
+        public ICollection<VehicleInspectionReport> Inspections { get; set; } = new List<VehicleInspectionReport>();
     }
 }
+
+
+

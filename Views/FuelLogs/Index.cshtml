@@ -1,0 +1,195 @@
+@model IEnumerable<Truck_Maintanance_system.Models.FuelLog>
+
+@{
+    ViewData["Title"] = "Fuel Logs & Expense Tracking";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 font-weight-bold text-gray-800 mb-1">
+                <i class="fas fa-gas-pump text-primary mr-2"></i> Fuel Logs & Expense Tracking
+            </h2>
+            <p class="text-muted small mb-0">Monitor fleet fuel purchases, mileage, rate per liter, and digital receipts.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm rounded-pill px-4">
+            <i class="fas fa-plus mr-1"></i> Log Fuel Refill
+        </a>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Fuel Spent</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹@(((decimal)(ViewBag.TotalSpent ?? 0)).ToString("N2"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-info shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Volume (L)</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@(((decimal)(ViewBag.TotalLiters ?? 0)).ToString("N1")) L</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tint fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Avg Rate / Liter</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">₹@(((decimal)(ViewBag.AvgPricePerLiter ?? 0)).ToString("N2"))</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Refill Entries</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalFills</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-receipt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form method="get" class="row align-items-end g-3">
+                <div class="col-md-3">
+                    <label class="small font-weight-bold mb-1 text-muted">Filter By Truck</label>
+                    <select name="truckId" class="form-control form-control-sm" asp-items="ViewBag.Trucks">
+                        <option value="">-- All Trucks --</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small font-weight-bold mb-1 text-muted">From Date</label>
+                    <input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control form-control-sm" />
+                </div>
+                <div class="col-md-3">
+                    <label class="small font-weight-bold mb-1 text-muted">To Date</label>
+                    <input type="date" name="toDate" value="@ViewBag.ToDate" class="form-control form-control-sm" />
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="fas fa-undo mr-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Fuel Logs Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list mr-1"></i> Fuel Expense Records</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Truck</th>
+                            <th>Driver</th>
+                            <th>Odometer</th>
+                            <th>Volume</th>
+                            <th>Rate (₹)</th>
+                            <th>Total Cost (₹)</th>
+                            <th>Station / Payment</th>
+                            <th>Receipt</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="10" class="text-center py-4 text-muted">
+                                    <i class="fas fa-gas-pump fa-2x mb-2 d-block text-gray-400"></i>
+                                    No fuel logs found for the selected criteria.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td><strong>@item.FuelDate.ToString("dd MMM yyyy")</strong></td>
+                                    <td>
+                                        <span class="badge badge-primary px-2 py-1">@item.Truck?.LicensePlate</span>
+                                    </td>
+                                    <td>@item.DriverName</td>
+                                    <td>@item.OdometerReading.ToString("N0") km</td>
+                                    <td>@item.Liters.ToString("N1") L</td>
+                                    <td>₹@item.PricePerLiter.ToString("N2")</td>
+                                    <td class="font-weight-bold text-success">₹@item.TotalAmount.ToString("N2")</td>
+                                    <td>
+                                        <div class="small">@(string.IsNullOrEmpty(item.FuelStation) ? "N/A" : item.FuelStation)</div>
+                                        <span class="badge badge-secondary small">@item.PaymentMode</span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ReceiptImagePath))
+                                        {
+                                            <a href="@item.ReceiptImagePath" target="_blank" class="btn btn-sm btn-outline-info rounded-pill py-0 px-2" title="View Receipt">
+                                                <i class="fas fa-receipt"></i> View
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">None</span>
+                                        }
+                                    </td>
+                                    <td class="text-right">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light text-primary" title="Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-light text-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

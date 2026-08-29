@@ -1,0 +1,93 @@
+@model Truck_Maintanance_system.Models.TyreInventory
+
+@{
+    ViewData["Title"] = "Tyre Details";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-circle-notch mr-2"></i> Tyre #@Model.SerialNumber
+                    </h5>
+                    <span class="badge badge-primary px-3 py-2">@Model.Brand (@Model.Size)</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-sm-6">
+                            <h6 class="text-muted small mb-1">Assigned Vehicle</h6>
+                            <h5 class="font-weight-bold">
+                                @(Model.Truck != null ? $"{Model.Truck.LicensePlate} ({Model.Truck.Make})" : "Warehouse / Unassigned")
+                            </h5>
+                        </div>
+                        <div class="col-sm-6 text-sm-right">
+                            <h6 class="text-muted small mb-1">Axle Position</h6>
+                            <h5 class="font-weight-bold text-info">@Model.AxlePosition</h5>
+                        </div>
+                    </div>
+
+                    <div class="card bg-light border-0 mb-4 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="font-weight-bold">Tread Depth Remaining</span>
+                            <span class="font-weight-bold @(Model.TreadDepthMm <= 4.0m ? "text-danger" : "text-success")">
+                                @Model.TreadDepthMm mm
+                            </span>
+                        </div>
+                        <div class="progress" style="height: 12px;">
+                            @{
+                                var percent = Math.Min(100, (int)((Model.TreadDepthMm / 15.0m) * 100));
+                                var barClass = Model.TreadDepthMm <= 4.0m ? "bg-danger" : (Model.TreadDepthMm <= 7.0m ? "bg-warning" : "bg-success");
+                            }
+                            <div class="progress-bar @barClass" role="progressbar" style="width: @percent%"></div>
+                        </div>
+                        @if (Model.TreadDepthMm <= 4.0m)
+                        {
+                            <div class="text-danger small mt-2">
+                                <i class="fas fa-exclamation-triangle mr-1"></i> Critical wear level reached. Immediate replacement or retreading recommended.
+                            </div>
+                        }
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Status</div>
+                            <div class="font-weight-bold">@Model.Status</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Purchase Date</div>
+                            <div class="font-weight-bold">@Model.PurchaseDate.ToString("dd MMMM yyyy")</div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="text-muted small">Purchase Cost</div>
+                            <div class="font-weight-bold text-success">₹@Model.PurchaseCost.ToString("N0")</div>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="alert alert-light border mb-4">
+                            <h6 class="font-weight-bold small text-muted mb-1">Notes & History:</h6>
+                            <p class="mb-0">@Model.Notes</p>
+                        </div>
+                    }
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">
+                            <i class="fas fa-arrow-left mr-1"></i> Back to Inventory
+                        </a>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning rounded-pill px-4 mr-2">
+                                <i class="fas fa-edit mr-1"></i> Edit / Rotate
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger rounded-pill px-4">
+                                <i class="fas fa-trash mr-1"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

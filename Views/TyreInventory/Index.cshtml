@@ -1,0 +1,222 @@
+@model IEnumerable<Truck_Maintanance_system.Models.TyreInventory>
+
+@{
+    ViewData["Title"] = "Tyre Inventory & Wear Tracking";
+}
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="h3 font-weight-bold text-gray-800 mb-1">
+                <i class="fas fa-circle-notch text-primary mr-2"></i> Tyre Inventory & Wear Tracking
+            </h2>
+            <p class="text-muted small mb-0">Track tyre lifecycle, axle positions, tread depth health, and replacement warnings.</p>
+        </div>
+        <a asp-action="Create" class="btn btn-primary shadow-sm rounded-pill px-4">
+            <i class="fas fa-plus mr-1"></i> Add / Mount Tyre
+        </a>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-primary shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Tyre Fleet</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.TotalTyres</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-circle-notch fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-success shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Mounted Active</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.MountedTyres</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-truck-moving fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-danger shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Low Tread Alert (&le;4mm)</div>
+                            <div class="h5 mb-0 font-weight-bold text-danger">@ViewBag.LowTreadWarnings</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-warning shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Spares in Stock</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">@ViewBag.SpareTyres</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-warehouse fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form method="get" class="row align-items-end g-3">
+                <div class="col-md-4">
+                    <label class="small font-weight-bold mb-1 text-muted">Filter By Truck</label>
+                    <select name="truckId" class="form-control form-control-sm" asp-items="ViewBag.Trucks">
+                        <option value="">-- All Trucks --</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="small font-weight-bold mb-1 text-muted">Status</label>
+                    <select name="status" class="form-control form-control-sm" asp-items="Html.GetEnumSelectList<Truck_Maintanance_system.Models.TyreStatus>()">
+                        <option value="">-- All Statuses --</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-sm rounded-pill px-3">
+                        <i class="fas fa-filter mr-1"></i> Filter
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="fas fa-undo mr-1"></i> Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tyre Inventory Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list mr-1"></i> Tyre Fleet Details</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Serial / DOT</th>
+                            <th>Brand & Size</th>
+                            <th>Truck</th>
+                            <th>Axle Position</th>
+                            <th>Tread Depth</th>
+                            <th>Status</th>
+                            <th>Cost</th>
+                            <th class="text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted">
+                                    <i class="fas fa-circle-notch fa-2x mb-2 d-block text-gray-400"></i>
+                                    No tyres found matching the criteria.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var tyre in Model)
+                            {
+                                <tr class="@(tyre.IsLowTread ? "table-warning" : "")">
+                                    <td>
+                                        <strong>@tyre.SerialNumber</strong>
+                                        <div class="text-muted small">@tyre.PurchaseDate.ToString("dd MMM yyyy")</div>
+                                    </td>
+                                    <td>
+                                        <div><strong>@tyre.Brand</strong></div>
+                                        <span class="badge badge-light border">@tyre.Size</span>
+                                    </td>
+                                    <td>
+                                        @if (tyre.Truck != null)
+                                        {
+                                            <span class="badge badge-primary px-2 py-1">@tyre.Truck.LicensePlate</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Unassigned / Spare</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-map-pin text-muted mr-1"></i> @tyre.AxlePosition
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="progress flex-grow-1 mr-2" style="height: 8px;">
+                                                @{
+                                                    var percent = Math.Min(100, (int)((tyre.TreadDepthMm / 15.0m) * 100));
+                                                    var barColor = tyre.TreadDepthMm <= 4.0m ? "bg-danger" : (tyre.TreadDepthMm <= 7.0m ? "bg-warning" : "bg-success");
+                                                }
+                                                <div class="progress-bar @barColor" role="progressbar" style="width: @percent%"></div>
+                                            </div>
+                                            <span class="font-weight-bold @(tyre.TreadDepthMm <= 4.0m ? "text-danger" : "text-dark")">
+                                                @tyre.TreadDepthMm mm
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @switch (tyre.Status)
+                                        {
+                                            case Truck_Maintanance_system.Models.TyreStatus.Mounted:
+                                                <span class="badge badge-success">Mounted</span>
+                                                break;
+                                            case Truck_Maintanance_system.Models.TyreStatus.Spare:
+                                                <span class="badge badge-warning">Spare Stock</span>
+                                                break;
+                                            case Truck_Maintanance_system.Models.TyreStatus.NeedsRetreading:
+                                                <span class="badge badge-danger">Retreading Due</span>
+                                                break;
+                                            default:
+                                                <span class="badge badge-secondary">Scrapped</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>₹@tyre.PurchaseCost.ToString("N0")</td>
+                                    <td class="text-right">
+                                        <a asp-action="Edit" asp-route-id="@tyre.Id" class="btn btn-sm btn-light text-primary" title="Update / Rotate">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Details" asp-route-id="@tyre.Id" class="btn btn-sm btn-light text-info" title="Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@tyre.Id" class="btn btn-sm btn-light text-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
