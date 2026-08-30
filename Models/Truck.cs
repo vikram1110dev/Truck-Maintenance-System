@@ -69,6 +69,7 @@ namespace Truck_Maintanance_system.Models
         public ICollection<TyreInventory> Tyres { get; set; } = new List<TyreInventory>();
         public ICollection<VehicleInspectionReport> Inspections { get; set; } = new List<VehicleInspectionReport>();
         public ICollection<ServiceReminder> ServiceReminders { get; set; } = new List<ServiceReminder>();
+        public ICollection<SparePartUsage> SparePartUsages { get; set; } = new List<SparePartUsage>();
     }
 }
 

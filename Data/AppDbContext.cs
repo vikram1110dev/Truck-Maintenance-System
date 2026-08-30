@@ -23,6 +23,8 @@ namespace Truck_Maintanance_system.Data
         public DbSet<TyreInventory> TyreInventories { get; set; } = null!;
         public DbSet<VehicleInspectionReport> VehicleInspections { get; set; } = null!;
         public DbSet<ServiceReminder> ServiceReminders { get; set; } = null!;
+        public DbSet<SparePart> SpareParts { get; set; } = null!;
+        public DbSet<SparePartUsage> SparePartUsages { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +47,11 @@ namespace Truck_Maintanance_system.Data
             modelBuilder.Entity<ServiceReminder>().HasIndex(s => s.TruckId);
             modelBuilder.Entity<ServiceReminder>().HasIndex(s => s.DueDate);
             modelBuilder.Entity<ServiceReminder>().HasIndex(s => s.Status);
+            modelBuilder.Entity<SparePart>().HasIndex(p => p.PartNumber);
+            modelBuilder.Entity<SparePart>().HasIndex(p => p.Category);
+            modelBuilder.Entity<SparePartUsage>().HasIndex(u => u.SparePartId);
+            modelBuilder.Entity<SparePartUsage>().HasIndex(u => u.TruckId);
+            modelBuilder.Entity<SparePartUsage>().HasIndex(u => u.UsageDate);
 
             // --- Relationships ---
             modelBuilder.Entity<Truck>()
@@ -75,6 +82,18 @@ namespace Truck_Maintanance_system.Data
                 .HasMany(t => t.ServiceReminders)
                 .WithOne(s => s.Truck)
                 .HasForeignKey(s => s.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Truck>()
+                .HasMany(t => t.SparePartUsages)
+                .WithOne(u => u.Truck)
+                .HasForeignKey(u => u.TruckId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SparePart>()
+                .HasMany(p => p.Usages)
+                .WithOne(u => u.SparePart)
+                .HasForeignKey(u => u.SparePartId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
