@@ -1,0 +1,94 @@
+@model Truck_Maintanance_system.Models.SparePartUsage
+
+@{
+    ViewData["Title"] = "Issue Spare Part to Truck";
+    var part = ViewBag.Part as Truck_Maintanance_system.Models.SparePart;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-info text-dark py-3 rounded-top-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 font-weight-bold">
+                            <i class="fas fa-truck-pickup me-2"></i> Issue Part to Truck
+                        </h4>
+                        <a asp-action="Index" class="btn btn-outline-dark btn-sm rounded-pill">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Inventory
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (part != null)
+                    {
+                        <div class="p-3 bg-light rounded-3 mb-4 border">
+                            <div class="row align-items-center">
+                                <div class="col-md-7">
+                                    <h5 class="font-weight-bold mb-1 text-dark">@part.PartName</h5>
+                                    <div class="text-muted small">SKU: <strong>@part.PartNumber</strong> | Category: <span class="badge bg-secondary">@part.Category</span></div>
+                                </div>
+                                <div class="col-md-5 text-md-end">
+                                    <div class="small text-muted">Stock Available: <strong class="text-success fs-5">@part.QuantityInStock units</strong></div>
+                                    <div class="small text-muted">Unit Cost: <strong>₹@part.UnitCost.ToString("N2")</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <form asp-action="IssueToTruck" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="SparePartId" />
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="TruckId" class="form-label font-weight-bold"></label>
+                                <select asp-for="TruckId" class="form-select shadow-sm" asp-items="ViewBag.TruckId">
+                                    <option value="">-- Select Target Truck --</option>
+                                </select>
+                                <span asp-validation-for="TruckId" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Quantity" class="form-label font-weight-bold"></label>
+                                <input asp-for="Quantity" class="form-control shadow-sm" type="number" min="1" max="@(part?.QuantityInStock ?? 100)" id="qtyInput" />
+                                <span asp-validation-for="Quantity" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="UsageDate" class="form-label font-weight-bold"></label>
+                                <input asp-for="UsageDate" class="form-control shadow-sm" type="date" />
+                                <span asp-validation-for="UsageDate" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="IssuedBy" class="form-label font-weight-bold"></label>
+                                <input asp-for="IssuedBy" class="form-control shadow-sm" placeholder="e.g. Chief Mechanic Velu" />
+                                <span asp-validation-for="IssuedBy" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="JobReference" class="form-label font-weight-bold"></label>
+                                <input asp-for="JobReference" class="form-control shadow-sm" placeholder="e.g. Job Card #JC-1082 / Scheduled Oil Replacement" />
+                                <span asp-validation-for="JobReference" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-light rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-info rounded-pill px-5 shadow-sm font-weight-bold">
+                                <i class="fas fa-check-circle me-1"></i> Confirm & Issue Part
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

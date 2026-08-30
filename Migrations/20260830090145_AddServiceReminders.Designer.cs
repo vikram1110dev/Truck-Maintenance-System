@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Truck_Maintanance_system.Data;
 
@@ -10,9 +11,11 @@ using Truck_Maintanance_system.Data;
 namespace Truck_Maintanance_system.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260830090145_AddServiceReminders")]
+    partial class AddServiceReminders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
@@ -419,109 +422,6 @@ namespace Truck_Maintanance_system.Migrations
                     b.HasIndex("TruckId");
 
                     b.ToTable("ServiceReminders");
-                });
-
-            modelBuilder.Entity("Truck_Maintanance_system.Models.SparePart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("LastRestockedDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LocationBin")
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("MinReorderLevel")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(300)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PartName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PartNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("QuantityInStock")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("SupplierName")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("UnitCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Category");
-
-                    b.HasIndex("PartNumber");
-
-                    b.ToTable("SpareParts");
-                });
-
-            modelBuilder.Entity("Truck_Maintanance_system.Models.SparePartUsage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("IssuedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("JobReference")
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SparePartId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TruckId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("UnitCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("UsageDate")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SparePartId");
-
-                    b.HasIndex("TruckId");
-
-                    b.HasIndex("UsageDate");
-
-                    b.ToTable("SparePartUsages");
                 });
 
             modelBuilder.Entity("Truck_Maintanance_system.Models.TripLocation", b =>
@@ -1723,25 +1623,6 @@ namespace Truck_Maintanance_system.Migrations
                     b.Navigation("Truck");
                 });
 
-            modelBuilder.Entity("Truck_Maintanance_system.Models.SparePartUsage", b =>
-                {
-                    b.HasOne("Truck_Maintanance_system.Models.SparePart", "SparePart")
-                        .WithMany("Usages")
-                        .HasForeignKey("SparePartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Truck_Maintanance_system.Models.Truck", "Truck")
-                        .WithMany("SparePartUsages")
-                        .HasForeignKey("TruckId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SparePart");
-
-                    b.Navigation("Truck");
-                });
-
             modelBuilder.Entity("Truck_Maintanance_system.Models.TripLocation", b =>
                 {
                     b.HasOne("Truck_Maintanance_system.Models.TripRecord", "Trip")
@@ -1807,11 +1688,6 @@ namespace Truck_Maintanance_system.Migrations
                     b.Navigation("Messages");
                 });
 
-            modelBuilder.Entity("Truck_Maintanance_system.Models.SparePart", b =>
-                {
-                    b.Navigation("Usages");
-                });
-
             modelBuilder.Entity("Truck_Maintanance_system.Models.Truck", b =>
                 {
                     b.Navigation("AlertTickets");
@@ -1825,8 +1701,6 @@ namespace Truck_Maintanance_system.Migrations
                     b.Navigation("MaintenanceRecords");
 
                     b.Navigation("ServiceReminders");
-
-                    b.Navigation("SparePartUsages");
 
                     b.Navigation("Trips");
 

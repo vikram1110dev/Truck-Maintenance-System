@@ -1,0 +1,238 @@
+@model Truck_Maintanance_system.Models.ViewModels.FleetDriverPerformanceIndexViewModel
+
+@{
+    ViewData["Title"] = "Driver Performance & Safety Scorecards";
+}
+
+<div class="container-fluid py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold text-dark mb-1">
+                <i class="fas fa-medal text-warning"></i> Driver Performance & Safety Scorecards
+            </h2>
+            <p class="text-muted mb-0">Evaluate driver safety index, trip completion reliability, fuel economy, and DVIR inspection compliance.</p>
+        </div>
+        <a asp-action="ExportCsv" class="btn btn-outline-success shadow-sm rounded-pill px-4">
+            <i class="fas fa-file-excel me-1"></i> Export Scorecards (CSV)
+        </a>
+    </div>
+
+    <!-- Leaderboard Highlights & Key Metrics -->
+    <div class="row g-3 mb-4">
+        <!-- Average Safety Score -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-primary p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Fleet Avg Safety Score</div>
+                        <div class="h3 font-weight-bold text-primary mb-0">@Model.AverageFleetSafetyScore <span class="fs-6 text-muted">/ 100</span></div>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+                        <i class="fas fa-shield-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Safety Driver -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-success p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">🏆 Safety Champion</div>
+                        <div class="h5 font-weight-bold text-success mb-0">@(Model.TopSafetyDriver?.DriverName ?? "N/A")</div>
+                        <small class="text-muted">Score: @(Model.TopSafetyDriver?.SafetyScore ?? 0) / 100</small>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                        <i class="fas fa-trophy fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Fleet Distance -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-info p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Total Fleet Distance</div>
+                        <div class="h3 font-weight-bold text-info mb-0">@Model.TotalFleetDistanceKm.ToString("N0") <span class="fs-6 text-muted">km</span></div>
+                    </div>
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
+                        <i class="fas fa-route fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Fuel Efficient -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-warning p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">⚡ Eco-Driver Leader</div>
+                        <div class="h5 font-weight-bold text-dark mb-0">@(Model.MostFuelEfficientDriver?.DriverName ?? "N/A")</div>
+                        <small class="text-muted">@(Model.MostFuelEfficientDriver?.KmPerLiter ?? 0) km / L</small>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                        <i class="fas fa-leaf fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Card -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0" placeholder="Search driver name or email..." value="@ViewBag.Search" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select name="performanceTier" class="form-select">
+                        <option value="">-- All Performance Tiers --</option>
+                        <option value="Elite Master" selected="@(ViewBag.PerformanceTier == "Elite Master")">Elite Master (90-100)</option>
+                        <option value="Top Performer" selected="@(ViewBag.PerformanceTier == "Top Performer")">Top Performer (80-89)</option>
+                        <option value="Good Standing" selected="@(ViewBag.PerformanceTier == "Good Standing")">Good Standing (70-79)</option>
+                        <option value="Needs Coaching" selected="@(ViewBag.PerformanceTier == "Needs Coaching")">Needs Coaching (55-69)</option>
+                        <option value="High Risk" selected="@(ViewBag.PerformanceTier == "High Risk")">High Risk (&lt; 55)</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="sortBy" class="form-select">
+                        <option value="">Sort by Safety Score (High to Low)</option>
+                        <option value="score_asc" selected="@(ViewBag.SortBy == "score_asc")">Sort by Safety Score (Low to High)</option>
+                        <option value="distance_desc" selected="@(ViewBag.SortBy == "distance_desc")">Sort by Total Distance (km)</option>
+                        <option value="trips_desc" selected="@(ViewBag.SortBy == "trips_desc")">Sort by Total Trips</option>
+                        <option value="fuel_desc" selected="@(ViewBag.SortBy == "fuel_desc")">Sort by Fuel Economy (km/L)</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark w-100"><i class="fas fa-filter me-1"></i> Filter</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-undo"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Driver Cards Grid / Leaderboard -->
+    <div class="row g-4 mb-4">
+        @if (!Model.Drivers.Any())
+        {
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="fas fa-user-slash fa-3x mb-3 text-secondary opacity-50"></i>
+                <h5>No driver performance records found.</h5>
+                <p>Ensure trips and inspections are logged in the system.</p>
+            </div>
+        }
+        else
+        {
+            int rank = 1;
+            @foreach (var driver in Model.Drivers)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+                        <!-- Top header banner -->
+                        <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge rounded-pill bg-light text-dark font-weight-bold px-2 py-1">
+                                    #@rank
+                                </span>
+                                <div>
+                                    <h5 class="mb-0 font-weight-bold">@driver.DriverName</h5>
+                                    <small class="text-white-50">@driver.Email</small>
+                                </div>
+                            </div>
+                            <span class="badge @driver.BadgeColorClass rounded-pill px-3 py-2">
+                                @driver.PerformanceTier
+                            </span>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <!-- Safety Score Ring / Progress -->
+                            <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded-3">
+                                <div>
+                                    <div class="text-muted small text-uppercase font-weight-bold">Safety Index</div>
+                                    <div class="h3 font-weight-bold text-dark mb-0">
+                                        @driver.SafetyScore <span class="fs-6 text-muted">/ 100</span>
+                                    </div>
+                                    <div class="text-warning small mt-1">
+                                        @for (int s = 1; s <= 5; s++)
+                                        {
+                                            if (driver.StarRating >= s)
+                                            {
+                                                <i class="fas fa-star"></i>
+                                            }
+                                            else if (driver.StarRating >= s - 0.5)
+                                            {
+                                                <i class="fas fa-star-half-alt"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="far fa-star"></i>
+                                            }
+                                        }
+                                        <span class="text-dark font-weight-bold ms-1">@driver.StarRating</span>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="progress" style="width: 90px; height: 10px;">
+                                        <div class="progress-bar @(driver.SafetyScore >= 80 ? "bg-success" : driver.SafetyScore >= 60 ? "bg-warning" : "bg-danger")"
+                                             role="progressbar" style="width: @driver.SafetyScore%" aria-valuenow="@driver.SafetyScore" aria-valuemin="0" aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Reliability rating</small>
+                                </div>
+                            </div>
+
+                            <!-- Performance Statistics Matrix -->
+                            <div class="row g-2 text-center mb-3">
+                                <div class="col-4">
+                                    <div class="p-2 border rounded-3 bg-white">
+                                        <div class="text-muted small">Trips Done</div>
+                                        <div class="font-weight-bold text-dark">@driver.CompletedTrips / @driver.TotalTrips</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 border rounded-3 bg-white">
+                                        <div class="text-muted small">Mileage</div>
+                                        <div class="font-weight-bold text-dark">@driver.TotalDistanceKm.ToString("N0") km</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 border rounded-3 bg-white">
+                                        <div class="text-muted small">Fuel Econ</div>
+                                        <div class="font-weight-bold text-dark">@(driver.KmPerLiter > 0 ? $"{driver.KmPerLiter} km/L" : "N/A")</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Inspections & Alerts badges -->
+                            <div class="d-flex justify-content-between align-items-center small text-muted border-top pt-2">
+                                <span>
+                                    <i class="fas fa-clipboard-check text-info me-1"></i> DVIR: <strong>@driver.InspectionCompliancePercent%</strong> passed
+                                </span>
+                                <span>
+                                    <i class="fas fa-exclamation-triangle text-danger me-1"></i> <strong>@driver.TotalAlerts</strong> incident alerts
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="card-footer bg-white border-top-0 p-3 pt-0">
+                            <a asp-action="Details" asp-route-driverName="@driver.DriverName" class="btn btn-outline-primary w-100 rounded-pill">
+                                <i class="fas fa-id-card me-1"></i> View Driver Dossier
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                rank++;
+            }
+        }
+    </div>
+</div>

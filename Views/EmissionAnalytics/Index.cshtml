@@ -1,0 +1,323 @@
+@model Truck_Maintanance_system.Models.ViewModels.EmissionAnalyticsViewModel
+
+@{
+    ViewData["Title"] = "Fleet Carbon Footprint & ESG Analytics";
+}
+
+<div class="container-fluid py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="font-weight-bold text-dark mb-1">
+                <i class="fas fa-leaf text-success"></i> Fleet Carbon Footprint & ESG Analytics
+            </h2>
+            <p class="text-muted mb-0">Monitor greenhouse gas emissions (CO₂), fuel combustion intensity, sustainability benchmarks, and ESG compliance.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="ExportEsgReport" asp-route-fromDate="@(Model.FromDate?.ToString("yyyy-MM-dd"))" asp-route-toDate="@(Model.ToDate?.ToString("yyyy-MM-dd"))" class="btn btn-outline-success shadow-sm rounded-pill px-4">
+                <i class="fas fa-file-csv me-1"></i> Export ESG Report (CSV)
+            </a>
+        </div>
+    </div>
+
+    <!-- Eco KPI Metric Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Total CO2 Tonnes -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-success p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Total Fleet CO₂ Emitted</div>
+                        <div class="h3 font-weight-bold text-success mb-0">@Model.TotalCo2EmissionsTonnes.ToString("N2") <span class="fs-6 text-muted">Tonnes</span></div>
+                        <small class="text-muted">(@Model.TotalCo2EmissionsKg.ToString("N0") kg CO₂)</small>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                        <i class="fas fa-smog fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emission Intensity -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-primary p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Avg Emission Intensity</div>
+                        <div class="h3 font-weight-bold text-primary mb-0">@Model.AverageEmissionIntensityGramsPerKm.ToString("N0") <span class="fs-6 text-muted">g CO₂/km</span></div>
+                        <small class="text-muted">Fleet Avg: @Model.FleetAverageKmPerLiter km/L</small>
+                    </div>
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 text-primary">
+                        <i class="fas fa-tachometer-alt fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trees Needed to Offset -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-info p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">🌲 Tree Offset Target</div>
+                        <div class="h3 font-weight-bold text-info mb-0">@Model.TreesNeededToOffset.ToString("N0") <span class="fs-6 text-muted">Trees</span></div>
+                        <small class="text-muted">Required for 1-year carbon neutrality</small>
+                    </div>
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
+                        <i class="fas fa-tree fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fleet Eco Grade -->
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 rounded-4 bg-light border-start border-4 border-warning p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Green Fleet Rating</div>
+                        <div class="h4 font-weight-bold text-dark mb-0">@Model.FleetEcoRating</div>
+                        <small class="text-muted">EPA/DEFRA standard benchmark</small>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                        <i class="fas fa-medal fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+        <div class="card-body p-3">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-0">From Date</label>
+                    <input type="date" name="fromDate" class="form-control" value="@(Model.FromDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-0">To Date</label>
+                    <input type="date" name="toDate" class="form-control" value="@(Model.ToDate?.ToString("yyyy-MM-dd"))" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small text-muted mb-0">Filter Truck</label>
+                    <select name="truckId" class="form-select" asp-items="ViewBag.TrucksList">
+                        <option value="">-- All Fleet Trucks --</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2 align-items-end pt-3">
+                    <button type="submit" class="btn btn-dark w-100"><i class="fas fa-filter me-1"></i> Apply Filter</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary"><i class="fas fa-undo"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 font-weight-bold text-dark">
+                        <i class="fas fa-chart-bar text-success me-2"></i> Monthly CO₂ Emission Trends (Tonnes)
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    @if (!Model.MonthlyTrends.Any())
+                    {
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-chart-area fa-3x mb-2 text-secondary opacity-50"></i>
+                            <p class="mb-0">No monthly emission logs available yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <canvas id="monthlyEmissionChart" style="max-height: 280px;"></canvas>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h5 class="mb-0 font-weight-bold text-dark">
+                        <i class="fas fa-chart-pie text-primary me-2"></i> Fleet Emission Breakdown
+                    </h5>
+                </div>
+                <div class="card-body p-4 d-flex flex-column justify-content-center align-items-center">
+                    @if (!Model.TruckEmissions.Any())
+                    {
+                        <p class="text-muted mb-0">No truck emission data.</p>
+                    }
+                    else
+                    {
+                        <div style="width: 100%; max-width: 240px;">
+                            <canvas id="truckEmissionDonutChart"></canvas>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Truck Sustainability Leaderboard Table -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 font-weight-bold text-dark">
+                <i class="fas fa-truck-moving text-primary me-2"></i> Truck-by-Truck Carbon Footprint & Eco Performance
+            </h5>
+            <span class="badge bg-light text-muted border">DEFRA Standard: 2.68 kg CO₂ / L</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Truck Plate</th>
+                        <th>Make & Model</th>
+                        <th>Total Fuel Consumed</th>
+                        <th>Total Mileage</th>
+                        <th>Fuel Economy</th>
+                        <th>Total CO₂ Emitted</th>
+                        <th>Emission Intensity</th>
+                        <th>Eco Grade</th>
+                        <th class="pe-4 text-end">Tree Offset</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.TruckEmissions.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <p class="mb-0">No truck emission logs found.</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.TruckEmissions)
+                        {
+                            <tr>
+                                <td class="ps-4 font-weight-bold">
+                                    <i class="fas fa-truck text-muted me-1"></i> @item.LicensePlate
+                                </td>
+                                <td>@item.MakeModel</td>
+                                <td><strong>@item.TotalFuelLiters.ToString("N1") L</strong></td>
+                                <td>@item.TotalDistanceKm.ToString("N0") km</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        @(item.KmPerLiter > 0 ? $"{item.KmPerLiter} km/L" : "N/A")
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong class="text-dark">@item.TotalCo2Tonnes.ToString("N3") T</strong>
+                                    <div class="small text-muted">(@item.TotalCo2Kg.ToString("N1") kg)</div>
+                                </td>
+                                <td>
+                                    @(item.GramsCo2PerKm > 0 ? $"{item.GramsCo2PerKm:N0} g/km" : "N/A")
+                                </td>
+                                <td>
+                                    <span class="badge @item.GradeBadgeClass px-2 py-1">@item.EfficiencyGrade</span>
+                                </td>
+                                <td class="pe-4 text-end">
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                        <i class="fas fa-tree me-1"></i> @((int)Math.Ceiling(item.TotalCo2Tonnes * 45)) trees
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Decarbonization Best Practices & Tips Card -->
+    <div class="card border-0 shadow-sm rounded-4 bg-light border-start border-4 border-success p-4">
+        <h5 class="font-weight-bold text-dark mb-3">
+            <i class="fas fa-lightbulb text-warning me-2"></i> Fleet Carbon Reduction Recommendations:
+        </h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                    <h6 class="font-weight-bold text-primary mb-1"><i class="fas fa-tachometer-alt me-1"></i> Eco-Driving & Speed Governing</h6>
+                    <p class="small text-muted mb-0">Maintaining a steady 65-75 km/h on highways reduces fuel consumption and CO₂ emissions by up to 12%.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                    <h6 class="font-weight-bold text-success mb-1"><i class="fas fa-circle-notch me-1"></i> Optimal Tyre Pressure</h6>
+                    <p class="small text-muted mb-0">Under-inflated tyres increase rolling resistance, consuming 3% more diesel per 5 PSI under inflation.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 bg-white rounded-3 border h-100">
+                    <h6 class="font-weight-bold text-info mb-1"><i class="fas fa-route me-1"></i> Route Optimization</h6>
+                    <p class="small text-muted mb-0">Eliminating empty return runs and using GPS dispatch routing avoids unnecessary idle fuel burn.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Monthly Emission Trend Chart
+        const monthlyLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyTrends.Select(m => m.MonthLabel)));
+        const monthlyCo2 = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyTrends.Select(m => m.Co2Tonnes)));
+
+        if (monthlyLabels.length > 0) {
+            const ctxMonthly = document.getElementById('monthlyEmissionChart').getContext('2d');
+            new Chart(ctxMonthly, {
+                type: 'bar',
+                data: {
+                    labels: monthlyLabels,
+                    datasets: [{
+                        label: 'CO₂ Emitted (Tonnes)',
+                        data: monthlyCo2,
+                        backgroundColor: 'rgba(40, 167, 69, 0.65)',
+                        borderColor: '#28a745',
+                        borderWidth: 1.5,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Tonnes of CO₂' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Truck Emission Donut Chart
+        const truckPlates = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TruckEmissions.Take(6).Select(t => t.LicensePlate)));
+        const truckCo2 = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TruckEmissions.Take(6).Select(t => t.TotalCo2Kg)));
+
+        if (truckPlates.length > 0) {
+            const ctxDonut = document.getElementById('truckEmissionDonutChart').getContext('2d');
+            new Chart(ctxDonut, {
+                type: 'doughnut',
+                data: {
+                    labels: truckPlates,
+                    datasets: [{
+                        data: truckCo2,
+                        backgroundColor: ['#28a745', '#007bff', '#ffc107', '#17a2b8', '#6c757d', '#fd7e14']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+    </script>
+}
