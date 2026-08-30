@@ -1,0 +1,278 @@
+@model Truck_Maintanance_system.Models.ViewModels.DriverScorecardViewModel
+
+@{
+    ViewData["Title"] = $"Driver Scorecard - {Model.DriverName}";
+}
+
+<div class="container-fluid py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm rounded-pill mb-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Driver Leaderboard
+            </a>
+            <h2 class="font-weight-bold text-dark mb-0">
+                <i class="fas fa-user-check text-primary me-2"></i> Driver Performance Dossier: @Model.DriverName
+            </h2>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-outline-dark rounded-pill px-3 shadow-sm">
+                <i class="fas fa-print me-1"></i> Print Scorecard
+            </button>
+            <span class="badge @Model.BadgeColorClass rounded-pill fs-6 px-3 py-2 d-flex align-items-center">
+                @Model.PerformanceTier
+            </span>
+        </div>
+    </div>
+
+    <!-- Summary KPI Header Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Safety Score Card -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary text-white p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-white-50 small text-uppercase font-weight-bold">Driver Safety Index</div>
+                        <div class="display-5 font-weight-bold">@Model.SafetyScore <span class="fs-6">/ 100</span></div>
+                        <div class="text-warning">
+                            @for (int s = 1; s <= 5; s++)
+                            {
+                                if (Model.StarRating >= s)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                else if (Model.StarRating >= s - 0.5)
+                                {
+                                    <i class="fas fa-star-half-alt"></i>
+                                }
+                                else
+                                {
+                                    <i class="far fa-star"></i>
+                                }
+                            }
+                            <span class="text-white ms-1">(@Model.StarRating stars)</span>
+                        </div>
+                    </div>
+                    <i class="fas fa-award fa-3x text-white-50"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trip Completion Card -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white border-start border-4 border-success p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Trip Completion Rate</div>
+                        <div class="h3 font-weight-bold text-success mb-0">@Model.TripCompletionRate%</div>
+                        <small class="text-muted">@Model.CompletedTrips completed of @Model.TotalTrips trips</small>
+                    </div>
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 text-success">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Distance & Fuel -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white border-start border-4 border-info p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">Distance & Fuel Logged</div>
+                        <div class="h3 font-weight-bold text-info mb-0">@Model.TotalDistanceKm.ToString("N0") <span class="fs-6 text-muted">km</span></div>
+                        <small class="text-muted">@(Model.KmPerLiter > 0 ? $"{Model.KmPerLiter} km/L Avg" : "No fuel logs")</small>
+                    </div>
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 text-info">
+                        <i class="fas fa-gas-pump fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DVIR Compliance Card -->
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-4 bg-white border-start border-4 border-warning p-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small text-uppercase font-weight-bold">DVIR Inspection Pass Rate</div>
+                        <div class="h3 font-weight-bold text-warning mb-0">@Model.InspectionCompliancePercent%</div>
+                        <small class="text-muted">@Model.PassedInspections passed, @Model.FailedInspections defects</small>
+                    </div>
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 text-warning">
+                        <i class="fas fa-clipboard-check fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs for Recent Trips, Inspections, and Fuel Logs -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-header bg-white border-bottom p-0">
+            <ul class="nav nav-tabs card-header-tabs m-0" id="driverDetailTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active py-3 px-4 font-weight-bold" id="trips-tab" data-bs-toggle="tab" data-bs-target="#tripsTabPane" type="button" role="tab">
+                        <i class="fas fa-route me-1 text-primary"></i> Assigned Trips (@Model.RecentTrips.Count)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link py-3 px-4 font-weight-bold" id="inspections-tab" data-bs-toggle="tab" data-bs-target="#inspectionsTabPane" type="button" role="tab">
+                        <i class="fas fa-clipboard-list me-1 text-info"></i> DVIR Vehicle Inspections (@Model.RecentInspections.Count)
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link py-3 px-4 font-weight-bold" id="fuel-tab" data-bs-toggle="tab" data-bs-target="#fuelTabPane" type="button" role="tab">
+                        <i class="fas fa-gas-pump me-1 text-warning"></i> Fuel Refueling Logs (@Model.RecentFuelLogs.Count)
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="tab-content" id="driverDetailTabsContent">
+                <!-- Trips Tab -->
+                <div class="tab-pane fade show active" id="tripsTabPane" role="tabpanel">
+                    @if (!Model.RecentTrips.Any())
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">No recent trip records found for this driver.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Trip ID</th>
+                                        <th>Truck</th>
+                                        <th>Origin &rarr; Destination</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Distance</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var trip in Model.RecentTrips)
+                                    {
+                                        <tr>
+                                            <td class="font-weight-bold">#@trip.Id</td>
+                                            <td>
+                                                <i class="fas fa-truck text-muted me-1"></i>
+                                                @(trip.Truck?.LicensePlate ?? "N/A")
+                                            </td>
+                                            <td>
+                                                <span class="font-weight-bold text-dark">@trip.RouteStart</span> &rarr; <span class="font-weight-bold text-dark">@trip.RouteEnd</span>
+                                            </td>
+                                            <td>@trip.StartDate.ToString("dd MMM yyyy")</td>
+                                            <td>@trip.EndDate.ToString("dd MMM yyyy")</td>
+                                            <td><strong>@trip.DistanceKm.ToString("N1") km</strong></td>
+                                            <td>
+                                                <span class="badge @(trip.Status == Truck_Maintanance_system.Models.TripStatus.Completed ? "bg-success" : trip.Status == Truck_Maintanance_system.Models.TripStatus.InProgress ? "bg-primary" : "bg-secondary")">
+                                                    @trip.Status
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <!-- Inspections Tab -->
+                <div class="tab-pane fade" id="inspectionsTabPane" role="tabpanel">
+                    @if (!Model.RecentInspections.Any())
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">No vehicle inspection reports filed by this driver yet.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Truck</th>
+                                        <th>Type</th>
+                                        <th>Odometer</th>
+                                        <th>Safety Status</th>
+                                        <th>Defects Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ins in Model.RecentInspections)
+                                    {
+                                        <tr>
+                                            <td>@ins.InspectionDate.ToString("dd MMM yyyy HH:mm")</td>
+                                            <td><strong>@(ins.Truck?.LicensePlate ?? "N/A")</strong></td>
+                                            <td><span class="badge bg-light text-dark border">@ins.Type</span></td>
+                                            <td>@ins.OdometerReading.ToString("N0") km</td>
+                                            <td>
+                                                @if (ins.IsSafeToOperate)
+                                                {
+                                                    <span class="badge bg-success"><i class="fas fa-check-circle me-1"></i> Safe to Operate</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger"><i class="fas fa-exclamation-triangle me-1"></i> Unsafe / Defects</span>
+                                                }
+                                            </td>
+                                            <td>@(string.IsNullOrEmpty(ins.DefectsDescription) ? "No defects reported" : ins.DefectsDescription)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+
+                <!-- Fuel Logs Tab -->
+                <div class="tab-pane fade" id="fuelTabPane" role="tabpanel">
+                    @if (!Model.RecentFuelLogs.Any())
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <p class="mb-0">No fuel fill-up logs recorded for this driver.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Truck</th>
+                                        <th>Liters</th>
+                                        <th>Price / L</th>
+                                        <th>Total Cost</th>
+                                        <th>Odometer</th>
+                                        <th>Station</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var fuel in Model.RecentFuelLogs)
+                                    {
+                                        <tr>
+                                            <td>@fuel.FuelDate.ToString("dd MMM yyyy")</td>
+                                            <td><strong>@(fuel.Truck?.LicensePlate ?? "N/A")</strong></td>
+                                            <td><strong class="text-primary">@fuel.Liters.ToString("N1") L</strong></td>
+                                            <td>₹@fuel.PricePerLiter.ToString("N2")</td>
+                                            <td><strong>₹@fuel.TotalAmount.ToString("N2")</strong></td>
+                                            <td>@fuel.OdometerReading.ToString("N0") km</td>
+                                            <td>@(fuel.FuelStation ?? "-")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
