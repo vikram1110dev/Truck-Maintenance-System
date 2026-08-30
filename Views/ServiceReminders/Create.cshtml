@@ -1,0 +1,199 @@
+@model Truck_Maintanance_system.Models.ServiceReminder
+
+@{
+    ViewData["Title"] = "Schedule Preventive Maintenance";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white py-3 rounded-top-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 font-weight-bold">
+                            <i class="fas fa-calendar-plus me-2"></i> Schedule Preventive Maintenance
+                        </h4>
+                        <a asp-action="Index" class="btn btn-outline-light btn-sm rounded-pill">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Reminders
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Quick Preset Templates -->
+                    <div class="mb-4 p-3 bg-light rounded-3 border">
+                        <label class="form-label font-weight-bold text-dark mb-2">
+                            <i class="fas fa-magic text-warning me-1"></i> Quick Presets (Click to Auto-fill):
+                        </label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-dark bg-white rounded-pill preset-btn"
+                                    data-service="Engine Oil & Filter Change" data-months="6" data-km="10000" data-priority="High">
+                                <i class="fas fa-oil-can text-warning me-1"></i> Engine Oil (10,000 km / 6 mo)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark bg-white rounded-pill preset-btn"
+                                    data-service="Brake Lining & Drum Inspection" data-months="6" data-km="20000" data-priority="Critical">
+                                <i class="fas fa-shield-alt text-danger me-1"></i> Brake Check (20,000 km / 6 mo)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark bg-white rounded-pill preset-btn"
+                                    data-service="Tyre Rotation & Alignment" data-months="4" data-km="15000" data-priority="Medium">
+                                <i class="fas fa-circle-notch text-secondary me-1"></i> Tyre Rotation (15,000 km)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark bg-white rounded-pill preset-btn"
+                                    data-service="Radiator Coolant Flush" data-months="12" data-km="40000" data-priority="Medium">
+                                <i class="fas fa-snowflake text-info me-1"></i> Coolant Flush (40,000 km / 12 mo)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-dark bg-white rounded-pill preset-btn"
+                                    data-service="Transmission & Gearbox Oil" data-months="18" data-km="60000" data-priority="High">
+                                <i class="fas fa-cogs text-primary me-1"></i> Gearbox Oil (60,000 km)
+                            </button>
+                        </div>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="TruckId" class="form-label font-weight-bold"></label>
+                                <select asp-for="TruckId" class="form-select shadow-sm" asp-items="ViewBag.TruckId" id="truckSelect">
+                                    <option value="">-- Select Truck --</option>
+                                </select>
+                                <span asp-validation-for="TruckId" class="text-danger small"></span>
+                                <div id="truckOdoBadge" class="mt-1 small text-muted"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ServiceType" class="form-label font-weight-bold"></label>
+                                <input asp-for="ServiceType" class="form-control shadow-sm" id="serviceTypeInput" placeholder="e.g. Engine Oil Change" />
+                                <span asp-validation-for="ServiceType" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="DueDate" class="form-label font-weight-bold"></label>
+                                <input asp-for="DueDate" class="form-control shadow-sm" type="date" id="dueDateInput" />
+                                <span asp-validation-for="DueDate" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="DueOdometer" class="form-label font-weight-bold"></label>
+                                <div class="input-group shadow-sm">
+                                    <input asp-for="DueOdometer" class="form-control" type="number" id="dueOdoInput" placeholder="e.g. 125000" />
+                                    <span class="input-group-text">km</span>
+                                </div>
+                                <span asp-validation-for="DueOdometer" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="Priority" class="form-label font-weight-bold"></label>
+                                <select asp-for="Priority" class="form-select shadow-sm" id="prioritySelect">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium" selected>Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                                <span asp-validation-for="Priority" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="IntervalMonths" class="form-label font-weight-bold"></label>
+                                <div class="input-group shadow-sm">
+                                    <input asp-for="IntervalMonths" class="form-control" type="number" id="intervalMonthsInput" placeholder="e.g. 6" />
+                                    <span class="input-group-text">months</span>
+                                </div>
+                                <span asp-validation-for="IntervalMonths" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="IntervalKm" class="form-label font-weight-bold"></label>
+                                <div class="input-group shadow-sm">
+                                    <input asp-for="IntervalKm" class="form-control" type="number" id="intervalKmInput" placeholder="e.g. 10000" />
+                                    <span class="input-group-text">km</span>
+                                </div>
+                                <span asp-validation-for="IntervalKm" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="LastServicedDate" class="form-label font-weight-bold"></label>
+                                <input asp-for="LastServicedDate" class="form-control shadow-sm" type="date" />
+                                <span asp-validation-for="LastServicedDate" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="LastServicedOdometer" class="form-label font-weight-bold"></label>
+                                <div class="input-group shadow-sm">
+                                    <input asp-for="LastServicedOdometer" class="form-control" type="number" id="lastServicedOdoInput" />
+                                    <span class="input-group-text">km</span>
+                                </div>
+                                <span asp-validation-for="LastServicedOdometer" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Notes" class="form-label font-weight-bold"></label>
+                                <textarea asp-for="Notes" class="form-control shadow-sm" rows="3" placeholder="Special requirements, parts needed, or OEM guidelines..."></textarea>
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                            <a asp-action="Index" class="btn btn-light rounded-pill px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                                <i class="fas fa-check-circle me-1"></i> Save Reminder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const trucksData = @Html.Raw(ViewBag.TruckDataJson ?? "[]");
+
+        function updateTruckOdo() {
+            const selectedId = parseInt(document.getElementById('truckSelect').value);
+            const truck = trucksData.find(t => t.Id === selectedId);
+            const badge = document.getElementById('truckOdoBadge');
+            const lastOdoInput = document.getElementById('lastServicedOdoInput');
+            
+            if (truck) {
+                badge.innerHTML = `<i class="fas fa-info-circle text-primary"></i> Current Odometer: <strong>${truck.CurrentOdometer.toLocaleString()} km</strong> (${truck.MakeModel})`;
+                if (!lastOdoInput.value) {
+                    lastOdoInput.value = truck.CurrentOdometer;
+                }
+            } else {
+                badge.innerHTML = '';
+            }
+        }
+
+        document.getElementById('truckSelect').addEventListener('change', updateTruckOdo);
+        updateTruckOdo();
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const service = this.getAttribute('data-service');
+                const months = parseInt(this.getAttribute('data-months'));
+                const km = parseInt(this.getAttribute('data-km'));
+                const priority = this.getAttribute('data-priority');
+
+                document.getElementById('serviceTypeInput').value = service;
+                document.getElementById('intervalMonthsInput').value = months;
+                document.getElementById('intervalKmInput').value = km;
+                document.getElementById('prioritySelect').value = priority;
+
+                // Auto compute dates
+                const now = new Date();
+                now.setMonth(now.getMonth() + months);
+                document.getElementById('dueDateInput').value = now.toISOString().split('T')[0];
+
+                const selectedId = parseInt(document.getElementById('truckSelect').value);
+                const truck = trucksData.find(t => t.Id === selectedId);
+                const currentOdo = truck ? truck.CurrentOdometer : 0;
+                document.getElementById('dueOdoInput').value = currentOdo + km;
+            });
+        });
+    </script>
+}
