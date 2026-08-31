@@ -3,157 +3,331 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Truck_Maintanance_system</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - Truck Maintenance System</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Truck_Maintanance_system.styles.css" asp-append-version="true" />
-    <!-- FontAwesome for icons -->
+    <!-- FontAwesome 6 for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand font-weight-bold text-primary" asp-area="" asp-controller="Home" asp-action="Index"><i class="fas fa-truck"></i> TMS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+        var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+        bool isFleetActive = new[] { "Trucks", "Trips", "VehicleInspections", "TruckDocuments", "LiveTracking" }
+            .Contains(currentController, StringComparer.OrdinalIgnoreCase);
+
+        bool isMaintenanceActive = new[] { "MechanicalMaintenance", "ServiceReminders", "SpareParts", "TyreInventory", "AlertTickets" }
+            .Contains(currentController, StringComparer.OrdinalIgnoreCase);
+
+        bool isFuelEsgActive = new[] { "FuelLogs", "EmissionAnalytics" }
+            .Contains(currentController, StringComparer.OrdinalIgnoreCase);
+
+        bool isFinanceHrActive = new[] { "ProfitReports", "Payroll", "DriverPerformance" }
+            .Contains(currentController, StringComparer.OrdinalIgnoreCase);
+    }
+
+    <header class="tms-header">
+        <nav class="navbar navbar-expand-xl tms-navbar">
+            <div class="container-fluid px-xl-4">
+                <!-- Brand -->
+                <a class="tms-brand" asp-area="" asp-controller="Dashboard" asp-action="Index">
+                    <div class="tms-brand-icon">
+                        <i class="fas fa-truck-moving"></i>
+                    </div>
+                    <div>
+                        <div class="tms-brand-title">TMS<span>Pro</span></div>
+                        <span class="tms-brand-badge">Fleet Care</span>
+                    </div>
+                </a>
+
+                <!-- Hamburger Toggler for Mobile -->
+                <button class="navbar-toggler border-0 shadow-none p-2" type="button" data-bs-toggle="collapse" data-bs-target="#tmsNavbarNav" 
+                        aria-controls="tmsNavbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fas fa-bars fa-lg text-secondary"></i>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse mt-2 mt-xl-0" id="tmsNavbarNav">
+                    <!-- Main Navigation Links -->
+                    <ul class="navbar-nav me-auto mb-2 mb-xl-0 gap-1 align-items-xl-center">
                         @if (User.IsInRole("Admin"))
                         {
+                            <!-- 1. Dashboard -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Dashboard" asp-action="Index">
-                                    <i class="fas fa-tachometer-alt text-primary"></i> Dashboard
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark font-weight-bold" asp-area="" asp-controller="Trucks" asp-action="Index">
-                                    <i class="fas fa-truck"></i> Fleet
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MechanicalMaintenance" asp-action="Create">
-                                    <i class="fas fa-tools"></i> Log Maintenance
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="TruckDocuments" asp-action="Index">
-                                    <i class="fas fa-folder-open"></i> Documents
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AlertTickets" asp-action="Index">
-                                    <i class="fas fa-exclamation-triangle text-danger"></i> Alerts
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Trips" asp-action="Index">
-                                    <i class="fas fa-route"></i> Trips
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FuelLogs" asp-action="Index">
-                                    <i class="fas fa-gas-pump text-warning"></i> Fuel Logs
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="TyreInventory" asp-action="Index">
-                                    <i class="fas fa-circle-notch text-secondary"></i> Tyres
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="VehicleInspections" asp-action="Index">
-                                    <i class="fas fa-clipboard-check text-info"></i> Inspections
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ServiceReminders" asp-action="Index">
-                                    <i class="fas fa-calendar-check text-primary"></i> Service Reminders
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SpareParts" asp-action="Index">
-                                    <i class="fas fa-boxes text-warning"></i> Spare Parts
+                                <a class="nav-link tms-nav-link @(currentController.Equals("Dashboard", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                   asp-area="" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="fas fa-chart-pie text-primary"></i>
+                                    <span>Dashboard</span>
                                 </a>
                             </li>
 
+                            <!-- 2. Fleet Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link tms-nav-link tms-dropdown-toggle dropdown-toggle @(isFleetActive ? "active" : "")" 
+                                   href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-truck text-indigo"></i>
+                                    <span>Fleet</span>
+                                </a>
+                                <div class="dropdown-menu tms-dropdown-menu">
+                                    <div class="tms-dropdown-header">Fleet Operations</div>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("Trucks", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="Trucks" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-blue">
+                                            <i class="fas fa-truck"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Fleet Vehicles</span>
+                                            <span class="tms-menu-item-desc">All trucks, status & specs</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("Trips", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="Trips" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-indigo">
+                                            <i class="fas fa-route"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Trips & Routes</span>
+                                            <span class="tms-menu-item-desc">Dispatches & driver logs</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("VehicleInspections", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="VehicleInspections" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-cyan">
+                                            <i class="fas fa-clipboard-check"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Vehicle Inspections</span>
+                                            <span class="tms-menu-item-desc">Daily pre-trip safety checks</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("TruckDocuments", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="TruckDocuments" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-amber">
+                                            <i class="fas fa-folder-open"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Compliance Documents</span>
+                                            <span class="tms-menu-item-desc">RC, Insurance, Permits & Expiry</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
 
-                            <li class="nav-item border-left ml-2 pl-2">
-                                <a class="nav-link font-weight-bold text-success" asp-area="" asp-controller="ProfitReports" asp-action="Index">
-                                    <i class="fas fa-chart-line"></i> Profit Dashboard
+                            <!-- 3. Maintenance Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link tms-nav-link tms-dropdown-toggle dropdown-toggle @(isMaintenanceActive ? "active" : "")" 
+                                   href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-wrench text-warning"></i>
+                                    <span>Maintenance</span>
                                 </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold text-info" asp-area="" asp-controller="Payroll" asp-action="Index">
-                                    <i class="fas fa-hand-holding-usd"></i> Payroll
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold text-warning" asp-area="" asp-controller="DriverPerformance" asp-action="Index">
-                                    <i class="fas fa-medal"></i> Driver Scorecards
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold text-primary" asp-area="" asp-controller="FleetReports" asp-action="Index">
-                                    <i class="fas fa-file-export"></i> Reports Center
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link font-weight-bold text-success" asp-area="" asp-controller="EmissionAnalytics" asp-action="Index">
-                                    <i class="fas fa-leaf"></i> Carbon & ESG
-                                </a>
+                                <div class="dropdown-menu tms-dropdown-menu">
+                                    <div class="tms-dropdown-header">Workshop & Service</div>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("MechanicalMaintenance", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="MechanicalMaintenance" asp-action="Create">
+                                        <div class="tms-menu-icon-box icon-box-amber">
+                                            <i class="fas fa-tools"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Log Maintenance</span>
+                                            <span class="tms-menu-item-desc">Record repair & workshop costs</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("ServiceReminders", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="ServiceReminders" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-blue">
+                                            <i class="fas fa-calendar-check"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Service Reminders</span>
+                                            <span class="tms-menu-item-desc">Odometer & calendar alerts</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("SpareParts", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="SpareParts" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-purple">
+                                            <i class="fas fa-boxes-stacked"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Spare Parts Inventory</span>
+                                            <span class="tms-menu-item-desc">Stock levels, reorders & usage</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("TyreInventory", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="TyreInventory" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-slate">
+                                            <i class="fas fa-circle-notch"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Tyre Management</span>
+                                            <span class="tms-menu-item-desc">Positions, tread wear & replacements</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("AlertTickets", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="AlertTickets" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-rose">
+                                            <i class="fas fa-triangle-exclamation"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Alert Tickets</span>
+                                            <span class="tms-menu-item-desc">Breakdowns & driver SOS issues</span>
+                                        </div>
+                                    </a>
+                                </div>
                             </li>
 
+                            <!-- 4. Fuel & ESG Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link tms-nav-link tms-dropdown-toggle dropdown-toggle @(isFuelEsgActive ? "active" : "")" 
+                                   href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-gas-pump text-success"></i>
+                                    <span>Fuel & ESG</span>
+                                </a>
+                                <div class="dropdown-menu tms-dropdown-menu">
+                                    <div class="tms-dropdown-header">Efficiency & Green Fleet</div>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("FuelLogs", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="FuelLogs" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-amber">
+                                            <i class="fas fa-gas-pump"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Fuel Logs & Mileage</span>
+                                            <span class="tms-menu-item-desc">Refueling, consumption & km/L</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("EmissionAnalytics", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="EmissionAnalytics" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-emerald">
+                                            <i class="fas fa-leaf"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Carbon & ESG Analytics</span>
+                                            <span class="tms-menu-item-desc">CO2 footprint & sustainability</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
 
+                            <!-- 5. Finance & HR Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link tms-nav-link tms-dropdown-toggle dropdown-toggle @(isFinanceHrActive ? "active" : "")" 
+                                   href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-wallet text-info"></i>
+                                    <span>Finance & HR</span>
+                                </a>
+                                <div class="dropdown-menu tms-dropdown-menu">
+                                    <div class="tms-dropdown-header">Financials & Drivers</div>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("ProfitReports", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="ProfitReports" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-emerald">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Profit Dashboard</span>
+                                            <span class="tms-menu-item-desc">Revenue, costs & net margins</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("Payroll", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="Payroll" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-cyan">
+                                            <i class="fas fa-hand-holding-dollar"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Driver Payroll</span>
+                                            <span class="tms-menu-item-desc">Salaries, trips & allowances</span>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item tms-dropdown-item @(currentController.Equals("DriverPerformance", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                       asp-area="" asp-controller="DriverPerformance" asp-action="Index">
+                                        <div class="tms-menu-icon-box icon-box-amber">
+                                            <i class="fas fa-medal"></i>
+                                        </div>
+                                        <div class="tms-menu-item-text">
+                                            <span class="tms-menu-item-title">Driver Scorecards</span>
+                                            <span class="tms-menu-item-desc">Safety, efficiency & ratings</span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </li>
+
+                            <!-- 6. Reports Center -->
+                            <li class="nav-item">
+                                <a class="nav-link tms-nav-link @(currentController.Equals("FleetReports", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                   asp-area="" asp-controller="FleetReports" asp-action="Index">
+                                    <i class="fas fa-file-export text-primary"></i>
+                                    <span>Reports</span>
+                                </a>
+                            </li>
+                        }
+                        else if (User.IsInRole("Driver"))
+                        {
+                            <!-- Driver Menu -->
+                            <li class="nav-item">
+                                <a class="nav-link tms-nav-link @(currentController.Equals("DriverPortal", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                   asp-area="" asp-controller="DriverPortal" asp-action="Index">
+                                    <i class="fas fa-id-card text-primary"></i>
+                                    <span>Driver Portal</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tms-nav-link @(currentController.Equals("VehicleInspections", StringComparison.OrdinalIgnoreCase) ? "active" : "")" 
+                                   asp-area="" asp-controller="VehicleInspections" asp-action="Index">
+                                    <i class="fas fa-clipboard-check text-info"></i>
+                                    <span>Daily Inspections</span>
+                                </a>
+                            </li>
                         }
                     </ul>
-                    
-                    <ul class="navbar-nav">
+
+                    <!-- User Profile & Authentication -->
+                    <div class="d-flex align-items-center gap-3 ms-xl-auto">
                         @if (User.Identity != null && User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item border-right mr-3 pr-3 d-flex align-items-center">
-                                <span class="text-muted small">
-                                    <i class="fas fa-user-circle"></i> @User.Identity.Name
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm">
-                                        <i class="fas fa-sign-out-alt"></i> Logout
-                                    </button>
-                                </form>
-                            </li>
+                            <div class="tms-user-profile">
+                                <div class="tms-user-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="tms-user-info">
+                                    <span class="tms-user-name" title="@User.Identity.Name">@User.Identity.Name</span>
+                                    <span class="tms-role-badge">@(User.IsInRole("Admin") ? "Admin" : "Driver")</span>
+                                </div>
+                            </div>
+                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
+                                <button type="submit" class="tms-logout-btn">
+                                    <i class="fas fa-arrow-right-from-bracket"></i>
+                                    <span>Logout</span>
+                                </button>
+                            </form>
                         }
                         else
                         {
-                            <li class="nav-item">
-                                <a class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm" asp-controller="Account" asp-action="Login">
-                                    <i class="fas fa-sign-in-alt"></i> Login
-                                </a>
-                            </li>
+                            <a class="tms-login-btn text-decoration-none" asp-controller="Account" asp-action="Login">
+                                <i class="fas fa-right-to-bracket"></i>
+                                <span>Login</span>
+                            </a>
                         }
-                    </ul>
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container-fluid px-xl-4 py-3">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Truck_Maintanance_system - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top py-3 text-center text-muted small bg-white mt-auto">
+        <div class="container-fluid">
+            &copy; 2026 - <strong>TMS Pro</strong> Fleet & Maintenance System &bull; <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-decoration-none text-muted">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
